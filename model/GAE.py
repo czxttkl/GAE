@@ -107,14 +107,14 @@ class GAEModel(TFModel):
         return test_acc, test_auc
 
     def model_file_name(self, **kwargs):
-        """ This method returns the file name used for storing model. It should be implemented by specific model. """
+        """ Returns the file name used for storing model. """
         data_src = self.reader.data_path.split('/')[-1].split('.')[0]
         embedding_size = str(kwargs.get('embedding_size'))
         fold = str(kwargs.get('fold'))
         return "{0}_GAE_fold={1}_embed={2}.pickle".format(data_src, fold, embedding_size)
 
     def collect_model_variables(self):
-        """ This method returns the variables to be stored. """
+        """ Returns the variables to be stored. """
         return self.ws, self.wc, self.wb, self.e, self.train_ce, self.train_acc, self.best_valid_acc, \
                self.best_valid_acc_round, self.test_acc, self.test_auc
 

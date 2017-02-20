@@ -1,6 +1,7 @@
 """ Generate Mini batches """
 import numpy
 
+
 class MiniBatcher(object):
 
     def __init__(self, batch_size, seed):
