@@ -1,11 +1,11 @@
 # DOTA 2
-dota2_pickle = '../input/dota2_matches.pickle'
+dota2_pickle = '../input/dota2.pickle'
 
 # heros of the storm data
-hots_output_pickle = '../input/hots_matches.pickle'
+hots_output_pickle = '../input/hots.pickle'
 
 # Heroes of Newerth
-hon_output_pickle = '../input/hon_matches.pickle'
+hon_output_pickle = '../input/hon.pickle'
 
 # table for hero information
 dota_full_info_table = '../input/dota_hero_attribute_id_table.csv'

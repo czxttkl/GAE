@@ -1,9 +1,5 @@
 """
-1. No extra layer. Just use a counter matrix and a synergy matrix to model two teams.
-2. Train with Stochastic Gradient Descent with tensorflow's AdagradOptimizer optimizer + mini-batch.
-3. No non-negativity constraint by using square of embeddings.
-
- This version seems to have highest accuracy in predicting outcomes.
+GAE implemented in Tensorflow
 """
 import sys
 sys.path.insert(0, '..')
