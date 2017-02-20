@@ -60,6 +60,9 @@ class GAEModel(TFModel):
         cross_entropy = tf.reduce_mean(
             tf.nn.sigmoid_cross_entropy_with_logits(pre_y_, tf.cast(y, tf.float32)))
         loss = cross_entropy
+        # Adagrad only supports to run on CPU
+        # train_step = tf.train.AdagradOptimizer(0.5).minimize(loss)
+        # AdamOptimizer supports to run on both CPU and GPU
         train_step = tf.train.AdamOptimizer().minimize(loss)
 
         # Test metrics
