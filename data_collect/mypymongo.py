@@ -10,24 +10,12 @@ class MyPyMongo:
         client = MongoClient('localhost', 27017)
         self.db = client['lol']
 
-    # def insert_match_seed(self, match_dict: dict):
-    #     # change side from enum to 100 / 200
-    #     # change runes key from int to str
-    #     for p in itertools.chain(match_dict['participants'],
-    #                              match_dict['teams'][0]['participants'],
-    #                              match_dict['teams'][1]['participants']):
-    #         p['side'] = p['side'].value
-    #         runes_dicts = p['runes']
-    #         new_runes_dicts = dict(map(lambda x: (str(x[0]), x[1]), runes_dicts.items()))
-    #         p['runes'] = new_runes_dicts
-    #
-    #     match_dict['teams'][0]['side'] = match_dict['teams'][0]['side'].value
-    #     match_dict['teams'][1]['side'] = match_dict['teams'][1]['side'].value
-    #     match_dict['creation']
-    #
-    #     import pprint
-    #     pprint.pprint(match_dict)
-    #     self.db.match_seed.insert_one(match_dict)
+    def insert_player_seed(self, account_id: str):
+        try:
+            self.db.player_seed.insert_one({'accountId': account_id})
+            print("INSERT MONGO: PLAYER SEED: success account id", account_id)
+        except DuplicateKeyError:
+            print("INSERT MONGO: PLAYER SEED: Duplicate account id", account_id)
 
     def insert_match_seed(self, match_json: str):
         match_dict = json.loads(match_json)
@@ -36,3 +24,10 @@ class MyPyMongo:
             print("INSERT MONGO: MATCH SEED: success match id", match_dict['id'])
         except DuplicateKeyError:
             print("INSERT MONGO: MATCH SEED: Duplicate match id", match_dict['id'])
+
+    def exist_match_id_in_match_seed(self, match_id: int):
+        match_id = int(match_id)
+        if self.db.match_seed.find({'id': match_id}).count() > 0:
+            return True
+        else:
+            return False

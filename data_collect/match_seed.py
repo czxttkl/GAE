@@ -20,10 +20,7 @@ def filter_match(match: Match):
     # only collect patch 8.6
     # skip abnormal match
     match_valid = True
-    try:
-        if match.duration.seconds < 5 * 60 or not match.version.startswith('8.6'):
-            match_valid = False
-    except:
+    if match.duration.seconds < 5 * 60 or not match.version.startswith('8.6'):
         match_valid = False
     return match_valid
 
@@ -34,10 +31,9 @@ def filter_summoner(summoner: Summoner):
     try:
         if summoner.ranks[Queue.ranked_solo_fives].tuple[0].name not in ['platinum']:
             summoner_valid = False
-    except:
+    except KeyError:
         summoner_valid = False
     return summoner_valid
-
 
 
 def collect_matches():
@@ -74,6 +70,11 @@ def collect_matches():
         while unpulled_match_ids:
             # Get a random match from our list of matches
             new_match_id = random.choice(unpulled_match_ids)
+            # don't query duplicated matches
+            if mypymongo.exist_match_id_in_match_seed(new_match_id):
+                unpulled_match_ids.remove(new_match_id)
+                continue
+
             new_match = Match(id=new_match_id, region=region)
 
             if not filter_match(new_match):
