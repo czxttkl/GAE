@@ -1,20 +1,43 @@
 import random
 from sortedcontainers import SortedList
-import arrow
 import pprint
 from config.config import MyConfig
 
 import cassiopeia as cass
 from cassiopeia.core import Summoner, MatchHistory, Match
-from cassiopeia import Queue, Patch
+from cassiopeia import Queue
 
-from mypymongo.mypymongo import MyPyMongo
+from data_collect.mypymongo import MyPyMongo
 
 
 def filter_match_history(summoner):
     match_history = MatchHistory(summoner=summoner, queues={Queue.ranked_solo_fives},
                                  begin_index=0, end_index=10)
     return match_history
+
+
+def filter_match(match: Match):
+    # only collect patch 8.6
+    # skip abnormal match
+    match_valid = True
+    try:
+        if match.duration.seconds < 5 * 60 or not match.version.startswith('8.6'):
+            match_valid = False
+    except:
+        match_valid = False
+    return match_valid
+
+
+def filter_summoner(summoner: Summoner):
+    # only collect platinum players
+    summoner_valid = True
+    try:
+        if summoner.ranks[Queue.ranked_solo_fives].tuple[0].name not in ['platinum']:
+            summoner_valid = False
+    except:
+        summoner_valid = False
+    return summoner_valid
+
 
 
 def collect_matches():
@@ -33,8 +56,8 @@ def collect_matches():
         # Get a random summoner from our list of unpulled summoners and pull their match history
         new_summoner_id = random.choice(unpulled_summoner_ids)
         new_summoner = Summoner(id=new_summoner_id, region=region)
-        # only collect platinum players
-        if new_summoner.ranks[Queue.ranked_solo_fives].tuple[0].name not in ['platinum']:
+
+        if not filter_summoner(new_summoner):
             unpulled_summoner_ids.remove(new_summoner_id)
             continue
 
@@ -53,8 +76,7 @@ def collect_matches():
             new_match_id = random.choice(unpulled_match_ids)
             new_match = Match(id=new_match_id, region=region)
 
-            # skip abnormal match and not 8.6 patch
-            if new_match.duration.seconds < 5 * 60 or not new_match.version.startswith('8.6'):
+            if not filter_match(new_match):
                 unpulled_match_ids.remove(new_match_id)
                 continue
 
