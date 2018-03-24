@@ -1,2 +1,3 @@
 *.pyc
 config/config.txt
+plots/*.png
