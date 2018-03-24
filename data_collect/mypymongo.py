@@ -40,4 +40,13 @@ class MyPyMongo:
         else:
             return False
 
+    def insert_player_seed_match_history(self, match_history_dict: dict):
+        try:
+            self.db.player_seed_match_history.insert_one(match_history_dict)
+            print("INSERT MONGO: PLAYER SEED MATCH HISTORY: success match id, account_id ({}, {})"
+                  .format(match_history_dict['gameId'], match_history_dict['accountId']))
+        except DuplicateKeyError:
+            print("INSERT MONGO: PLAYER SEED MATCH HISTORY: Duplicate match id, account_id ({}, {})"
+                  .format(match_history_dict['gameId'], match_history_dict['accountId']))
+
 

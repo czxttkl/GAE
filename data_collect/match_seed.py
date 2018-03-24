@@ -4,6 +4,7 @@ import pprint
 from config.config import MyConfig
 
 import cassiopeia as cass
+import datapipelines
 from cassiopeia.core import Summoner, MatchHistory, Match
 from cassiopeia import Queue
 
@@ -20,8 +21,11 @@ def filter_match(match: Match):
     # only collect patch 8.6
     # skip abnormal match
     match_valid = True
-    if match.duration.seconds < 5 * 60 or not match.version.startswith('8.6'):
-        print('match invalid', match.id)
+    try:
+        if match.duration.seconds < 5 * 60 or not match.version.startswith('8.6'):
+            print('match invalid', match.id)
+            match_valid = False
+    except datapipelines.common.NotFoundError:
         match_valid = False
     return match_valid
 
