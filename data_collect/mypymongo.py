@@ -26,6 +26,14 @@ class MyPyMongo:
         except DuplicateKeyError:
             print("INSERT MONGO: MATCH SEED: Duplicate match id", match_dict['id'])
 
+    def insert_match(self, match_json: str):
+        match_dict = json.loads(match_json)
+        try:
+            self.db.match.insert_one(match_dict)
+            print("INSERT MONGO: MATCH: success match id", match_dict['id'])
+        except DuplicateKeyError:
+            print("INSERT MONGO: MATCH: Duplicate match id", match_dict['id'])
+
     def exist_match_id_in_match_seed(self, match_id: int):
         match_id = int(match_id)
         if self.db.match_seed.find({'id': match_id}).count() > 0:

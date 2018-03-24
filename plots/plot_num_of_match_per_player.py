@@ -5,6 +5,7 @@ plot_mngr = PlotManager()
 mypymongo = MyPyMongo()
 
 pipeline = [
+    # should filter on ranked matches
     {"$match": {"timestamp": {"$lt": 1522036799000}}},  # timestamp of 3.25 23:59 (when we stop crawling match seed)
     {"$group": {"_id": "$accountId", "count": {"$sum": 1}}},
 ]
@@ -16,4 +17,4 @@ num_of_match_per_player_cnt = list(map(lambda x: int(x['count']), num_of_match_p
 print(num_of_match_per_player_cnt)
 
 plot_mngr.hist(num_of_match_per_player_cnt, show=False, save_path='num_of_match_per_player_cnt.png',
-               xlabel_str='Number of Matches', ylabel_str="Number of Players")
+               xlabel_str='Number of Ranked Matches', ylabel_str="Number of Players")
