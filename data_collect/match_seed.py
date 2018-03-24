@@ -21,6 +21,7 @@ def filter_match(match: Match):
     # skip abnormal match
     match_valid = True
     if match.duration.seconds < 5 * 60 or not match.version.startswith('8.6'):
+        print('match invalid', match.id)
         match_valid = False
     return match_valid
 
@@ -30,6 +31,7 @@ def filter_summoner(summoner: Summoner):
     summoner_valid = True
     try:
         if summoner.ranks[Queue.ranked_solo_fives].tuple[0].name not in ['platinum']:
+            print('summoner invalid', summoner.name)
             summoner_valid = False
     except KeyError:
         summoner_valid = False
@@ -49,27 +51,30 @@ def collect_matches():
     pulled_match_ids = SortedList()
 
     while unpulled_summoner_ids:
+        print("\nStart a new summoner to pull")
+
         # Get a random summoner from our list of unpulled summoners and pull their match history
         new_summoner_id = random.choice(unpulled_summoner_ids)
+        unpulled_summoner_ids.remove(new_summoner_id)
+        pulled_summoner_ids.add(new_summoner_id)
+
         new_summoner = Summoner(id=new_summoner_id, region=region)
 
         if not filter_summoner(new_summoner):
-            unpulled_summoner_ids.remove(new_summoner_id)
             continue
 
         matches = filter_match_history(new_summoner)
         unpulled_match_ids.update([match.id for match in matches])
-        unpulled_summoner_ids.remove(new_summoner_id)
-        pulled_summoner_ids.add(new_summoner_id)
 
-        print("unpulled match ids:", len(unpulled_match_ids), unpulled_match_ids)
-        print("pulled match ids:", len(pulled_match_ids), pulled_match_ids)
-        print("unpulled summoner ids:", len(unpulled_summoner_ids), unpulled_summoner_ids)
-        print("pulled summoner ids:", len(pulled_summoner_ids), pulled_summoner_ids)
+        print("unpulled match ids:", len(unpulled_match_ids), unpulled_match_ids[:100])
+        print("pulled match ids:", len(pulled_match_ids), pulled_match_ids[:100])
+        print("unpulled summoner ids:", len(unpulled_summoner_ids), unpulled_summoner_ids[:100])
+        print("pulled summoner ids:", len(pulled_summoner_ids), pulled_summoner_ids[:100])
 
         while unpulled_match_ids:
-            # Get a random match from our list of matches
-            new_match_id = random.choice(unpulled_match_ids)
+            # select the latest match id
+            new_match_id = unpulled_match_ids[-1]
+
             # don't query duplicated matches
             if mypymongo.exist_match_id_in_match_seed(new_match_id):
                 unpulled_match_ids.remove(new_match_id)
@@ -77,8 +82,10 @@ def collect_matches():
 
             new_match = Match(id=new_match_id, region=region)
 
+            # invalid match is likely to be version 8.5. In this case, just don't crawl the rest of matches.
             if not filter_match(new_match):
-                unpulled_match_ids.remove(new_match_id)
+                unpulled_match_ids.clear()
+                # unpulled_match_ids.remove(new_match_id)
                 continue
 
             for participant in new_match.participants:
@@ -87,15 +94,13 @@ def collect_matches():
                     unpulled_summoner_ids.add(participant.summoner.id)
 
             mypymongo.insert_match_seed(new_match.to_json())
-            # The above lines will trigger the match to load its data by iterating over all the participants.
-            # If you have a database in your datapipeline, the match will automatically be stored in it.
             unpulled_match_ids.remove(new_match_id)
             pulled_match_ids.add(new_match_id)
 
-            print("unpulled match ids:", len(unpulled_match_ids), unpulled_match_ids)
-            print("pulled match ids:", len(pulled_match_ids), pulled_match_ids)
-            print("unpulled summoner ids:", len(unpulled_summoner_ids), unpulled_summoner_ids)
-            print("pulled summoner ids:", len(pulled_summoner_ids), pulled_summoner_ids)
+            print("unpulled match ids:", len(unpulled_match_ids), unpulled_match_ids[:100])
+            print("pulled match ids:", len(pulled_match_ids), pulled_match_ids[:100])
+            print("unpulled summoner ids:", len(unpulled_summoner_ids), unpulled_summoner_ids[:100])
+            print("pulled summoner ids:", len(pulled_summoner_ids), pulled_summoner_ids[:100])
 
 
 if __name__ == "__main__":

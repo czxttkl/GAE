@@ -10,7 +10,8 @@ class MyPyMongo:
         client = MongoClient('localhost', 27017)
         self.db = client['lol']
 
-    def insert_player_seed(self, account_id: str):
+    def insert_player_seed(self, account_id: int):
+        account_id = int(account_id)
         try:
             self.db.player_seed.insert_one({'accountId': account_id})
             print("INSERT MONGO: PLAYER SEED: success account id", account_id)
@@ -31,3 +32,12 @@ class MyPyMongo:
             return True
         else:
             return False
+
+    def exist_account_id_in_player_seed(self, account_id: int):
+        account_id = int(account_id)
+        if self.db.player_seed.find({'accountId': account_id}).count() > 0:
+            return True
+        else:
+            return False
+
+
