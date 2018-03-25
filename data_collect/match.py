@@ -7,13 +7,15 @@ from cassiopeia.core import Summoner, MatchHistory, Match
 from cassiopeia.data import Season
 
 from data_collect.mypymongo import MyPyMongo
+import pymongo
 
 
 def collect_match():
     for player in mypymongo.db.player_seed.find({'$or': [
                                                 {'player_in_match': None},
                                                 {'player_in_match': False}
-                                                ]}):
+                                                ]}, no_cursor_timeout=True)\
+                                          .sort("_id", pymongo.ASCENDING):  # sort _id ascending so that crawl players according to match seed participants order
         account_id = player['accountId']
         for match_history in \
             mypymongo.db.player_seed_match_history.find({
@@ -23,7 +25,7 @@ def collect_match():
                                                     {'match_history_in_match': False}
                                                 ]}):
             match = Match(id=match_history['gameId'], region="NA")
-            match.timeline # call time line to fetch time line
+            match.timeline    # call time line to fetch time line
             mypymongo.insert_match(match.to_json())
 
             match_history['match_history_in_match'] = True

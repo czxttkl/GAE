@@ -28,6 +28,9 @@ class MyPyMongo:
 
     def insert_match(self, match_json: str):
         match_dict = json.loads(match_json)
+        # teams participants data is the same as in participants field
+        match_dict['teams'][0].pop('participants', None)
+        match_dict['teams'][1].pop('participants', None)
         try:
             self.db.match.insert_one(match_dict)
             print("INSERT MONGO: MATCH: success match id", match_dict['id'])
@@ -56,5 +59,8 @@ class MyPyMongo:
         except DuplicateKeyError:
             print("INSERT MONGO: PLAYER SEED MATCH HISTORY: Duplicate match id, account_id ({}, {})"
                   .format(match_history_dict['gameId'], match_history_dict['accountId']))
+
+    def find_player_in_player_seed(self, account_id: int):
+        return self.db.player_seed.find({'accountId': account_id})
 
 
