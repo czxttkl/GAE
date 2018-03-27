@@ -46,7 +46,7 @@ def collect_player_seed_match_history():
 
 
 if __name__ == '__main__':
-    myconfig = MyConfig()
+    myconfig = MyConfig(file_name='config_huy.txt')
     config = cass.get_default_config()
     config['logging']['print_riot_api_key'] = True
     config['pipeline']['RiotAPI']['api_key'] = myconfig.riot_api_key

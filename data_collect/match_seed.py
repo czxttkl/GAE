@@ -13,16 +13,15 @@ from data_collect.mypymongo import MyPyMongo
 
 def filter_match_history(summoner):
     match_history = MatchHistory(summoner=summoner, queues={Queue.ranked_solo_fives},
-                                 begin_index=0, end_index=10)
+                                 begin_index=0, end_index=99)
     return match_history
 
 
 def filter_match(match: Match):
     # only collect patch 8.6
-    # skip abnormal match
     match_valid = True
     try:
-        if match.duration.seconds < 5 * 60 or not match.version.startswith('8.6'):
+        if not match.version.startswith('8.6'):
             print('match invalid', match.id)
             match_valid = False
     except datapipelines.common.NotFoundError:
@@ -90,6 +89,10 @@ def collect_matches():
             if not filter_match(new_match):
                 unpulled_match_ids.clear()
                 # unpulled_match_ids.remove(new_match_id)
+                break
+
+            if new_match.duration.seconds < 5 * 60:
+                unpulled_match_ids.remove(new_match_id)
                 continue
 
             for participant in new_match.participants:

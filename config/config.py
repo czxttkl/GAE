@@ -3,8 +3,8 @@ import sys
 
 
 class MyConfig:
-    def __init__(self):
-        with open(os.path.join(os.path.dirname(__file__), 'config.txt')) as f:
+    def __init__(self, file_name='config.txt'):
+        with open(os.path.join(os.path.dirname(__file__), file_name)) as f:
             c = f.read()
         cs = c.split('\n')
         self.riot_api_key = cs[0].split(':')[1]
