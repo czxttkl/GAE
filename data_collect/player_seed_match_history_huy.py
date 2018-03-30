@@ -10,10 +10,18 @@ from data_collect.mypymongo import MyPyMongo
 
 
 def collect_player_seed_match_history():
-    for player in mypymongo.db.player_seed.find({'$or': [
-                                                {'player_in_match_history': None},
-                                                {'player_in_match_history': False}
-                                                ]}, no_cursor_timeout=True):
+    while True:
+        player = mypymongo.db.player_seed.find_one({'$or': [
+                                                        {'player_in_match_history': None},
+                                                        {'player_in_match_history': False}
+                                                    ],
+                                                    'accountId': {
+                                                        '$mod': [myconfig.player_seed_match_history_num_machine,
+                                                                 myconfig.player_seed_match_history_remainder]
+                                                    }}, no_cursor_timeout=True)
+        if player is None:
+            break
+
         account_id = player['accountId']
         summoner = Summoner(account=account_id, region='NA')
         # A MatchHistory is a lazy list, meaning it's elements only get loaded as-needed.
@@ -22,6 +30,7 @@ def collect_player_seed_match_history():
         match_history(seasons={Season.season_7,
                                Season.preseason_8, Season.season_8})
 
+        i = 0
         for i, match in enumerate(match_history):
             match_dict = match.to_dict()
             # season before SEASON 2017 will be skipped

@@ -33,8 +33,8 @@ def filter_summoner(summoner: Summoner):
     # only collect platinum players
     summoner_valid = True
     try:
-        if summoner.ranks[Queue.ranked_solo_fives].tuple[0].name not in ['platinum']:
-            print('summoner invalid', summoner.name)
+        if summoner.ranks[Queue.ranked_solo_fives].tuple[0].name not in ['platinum', 'diamond', 'challenger', 'master']:
+            print('summoner invalid', summoner.name, summoner.ranks[Queue.ranked_solo_fives].tuple[0].name)
             summoner_valid = False
     except KeyError:
         summoner_valid = False
@@ -111,7 +111,7 @@ def collect_matches():
 
 
 if __name__ == "__main__":
-    myconfig = MyConfig()
+    myconfig = MyConfig(file_name='config_chen.txt')
     config = cass.get_default_config()
     config['logging']['print_riot_api_key'] = True
     config['pipeline']['RiotAPI']['api_key'] = myconfig.riot_api_key
