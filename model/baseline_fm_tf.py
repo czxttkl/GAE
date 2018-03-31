@@ -14,8 +14,8 @@ class BaselineTFFM(Baseline):
 
     def print_model(self, model):
         """ return description of a model as a string """
-        return 'FM_order_rank{}_l2regw{}_epoch{}'\
-            .format(model.core.order, model.core.rank, model.core.reg, model.core.epoch)
+        return 'FM_order{}_rank{}_l2regw{}_epoch{}'\
+            .format(model.core.order, model.core.rank, model.core.reg, model.n_epochs)
 
 
 if __name__ == "__main__":
@@ -23,7 +23,7 @@ if __name__ == "__main__":
                         order=2,
                         rank=20,
                         optimizer=tf.train.AdamOptimizer(),
-                        n_epochs=100,
+                        n_epochs=10,
                         batch_size=1024,
                         init_std=0.001,
                         reg=0,

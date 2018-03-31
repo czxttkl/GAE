@@ -1,7 +1,7 @@
 import copy
 import numpy
 import time
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, accuracy_score
 
 
 class Baseline(object):
@@ -34,11 +34,6 @@ class Baseline(object):
                 train_time = int(time.time() - t1)
                 durations.append(train_time)
 
-                train_acc = model.score(train_data, train_labels)
-                test_acc = model.score(test_data, test_labels)
-                train_accs.append(train_acc)
-                test_accs.append(test_acc)
-
                 train_predict_probs = model.predict_proba(train_data)
                 test_predict_probs = model.predict_proba(test_data)
                 # some model outputs probabilities for both classes. we only need probs for positive class.
@@ -46,10 +41,18 @@ class Baseline(object):
                     train_predict_probs = train_predict_probs[:, 1]
                 if len(test_predict_probs.shape) > 1:
                     test_predict_probs = test_predict_probs[:, 1]
+
                 train_auc = roc_auc_score(train_labels, train_predict_probs)
                 test_auc = roc_auc_score(test_labels, test_predict_probs)
                 train_aucs.append(train_auc)
                 test_aucs.append(test_auc)
+
+                train_predict_labels = (train_predict_probs > 0.5).astype(train_labels.dtype)
+                test_predict_labels = (test_predict_probs > 0.5).astype(test_labels.dtype)
+                train_acc = accuracy_score(train_labels, train_predict_labels)
+                test_acc = accuracy_score(test_labels, test_predict_labels)
+                train_accs.append(train_acc)
+                test_accs.append(test_acc)
 
                 print("{}, {}, {}, fold {}: train acc/auc: {:.5f}/{:.5f}, test acc/auc: {:.5f}/{:.5f}, train time: {}"
                       .format(self.reader.data_src, self.print_model(model), self.reader.print_feature_config(),

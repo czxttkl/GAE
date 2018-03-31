@@ -73,24 +73,24 @@ class CVFoldSparseReader(object):
         import numpy
         from scipy.sparse import csr_matrix
         M_r_C = numpy.array([[0,1,2,3,4], [15,16,17,18,19]])
-        M_b_C = numpy.array([[5,6,7,8,9], [10,11,12,13,14]])
+        M_b_C = numpy.array([[15,16,17,18,19], [0,1,2,3,4]])
         M = 20
         Z = M_r_C.shape[0]
         row = numpy.repeat(numpy.arange(Z), 10)
-        col = numpy.hstack((M_r_C, M_b_C)).flatten()
+        col = numpy.hstack((M_r_C, M_b_C + M)).flatten()
         assert len(row) == len(col)
         ones = numpy.ones((len(row), ))
-        data = csr_matrix((ones, (row, col)), shape=(Z, M))
+        data = csr_matrix((ones, (row, col)), shape=(Z, 2*M))
         data.toarray()
         """
         t1 = time.time()
         assert M_r_C.shape[0] == M_b_C.shape[0]
         Z = M_r_C.shape[0]
         row = numpy.repeat(numpy.arange(Z), 10)
-        col = numpy.hstack((M_r_C, M_b_C)).flatten()
+        col = numpy.hstack((M_r_C, M_b_C + self.M)).flatten()
         assert len(row) == len(col)
         ones = numpy.ones((len(row),))
-        data = csr_matrix((ones, (row, col)), shape=(Z, self.M))
+        data = csr_matrix((ones, (row, col)), shape=(Z, 2 * self.M))
         print("finish feature matrix conversion. time:", time.time() - t1)
         return data
 
