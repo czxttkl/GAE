@@ -11,7 +11,7 @@ class TFModel(object):
     def train_cv(self, **kwargs):
         """ Train multiple models, each using a fold of data"""
         test_accs, test_aucs = [], []
-        for i in xrange(self.reader.folds):
+        for i in range(self.reader.folds):
             M_o_train, M_r_C_train, M_b_C_train, M_o_test, M_r_C_test, M_b_C_test, \
             M_o_valid, M_r_C_valid, M_b_C_valid, M = self.reader.read_train_test_valid_fold(i)
             kwargs['fold'] = i
@@ -20,8 +20,8 @@ class TFModel(object):
             test_accs.append(test_acc)
             test_aucs.append(test_auc)
 
-        print "finish cross validation. Average test acc: {0}. Average test auc: {1}".\
-            format(numpy.mean(test_accs), numpy.mean(test_aucs))
+        print("finish cross validation. Average test acc: {0}. Average test auc: {1}".\
+            format(numpy.mean(test_accs), numpy.mean(test_aucs)))
 
     def _train(self, M_o_train, M_r_C_train, M_b_C_train, M_o_test, M_r_C_test, M_b_C_test,
                M_o_valid, M_r_C_valid, M_b_C_valid, M, **kwargs):
