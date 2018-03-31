@@ -26,15 +26,14 @@ def collect_player_seed_match_history():
         summoner = Summoner(account=account_id, region='NA')
         # A MatchHistory is a lazy list, meaning it's elements only get loaded as-needed.
         match_history = summoner.match_history
-        # collect data since 2017 season
-        match_history(seasons={Season.season_7,
-                               Season.preseason_8, Season.season_8})
+        # collect data since 2018 season
+        match_history(seasons={Season.season_8})
 
         i = 0
         for i, match in enumerate(match_history):
             match_dict = match.to_dict()
-            # season before SEASON 2017 will be skipped
-            if match_dict['season'] < 9:
+            # season before SEASON 2018 will be skipped
+            if match_dict['season'] < 11:
                 break
             new_match_dict = dict()
             new_match_dict['lane'] = match_dict['participants'][0]['stats']['lane']
@@ -51,7 +50,7 @@ def collect_player_seed_match_history():
         player['player_in_match_history'] = True
         mypymongo.db.player_seed.find_one_and_replace({'accountId': account_id}, player)
         print("finish crawling player {} with {} matches\n".format(account_id, i))
-        time.sleep(5)
+        time.sleep(1)
 
 
 if __name__ == '__main__':
