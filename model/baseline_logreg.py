@@ -25,6 +25,7 @@ class BaselineLR(Baseline):
         data_src = self.reader.data_path.split('/')[-1].split('.')[0]
         return "{0}_lR_C{1}".format(data_src, model.C)
 
+
 if __name__ == "__main__":
     baseline = \
         BaselineLR(
