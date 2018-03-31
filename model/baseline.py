@@ -10,7 +10,7 @@ class Baseline(object):
         self.reader = reader
         self.writer = writer
 
-    def cross_valid(self):
+    def cross_valid(self, show_progress=False):
         """
         Cross validate a list of models self.models
         :return: the last fold's best model
@@ -27,7 +27,10 @@ class Baseline(object):
                 model = copy.deepcopy(raw_model)
 
                 t1 = time.time()
-                model.fit(train_data, train_labels)
+                if show_progress:
+                    model.fit(train_data, train_labels, show_progress=True)
+                else:
+                    model.fit(train_data, train_labels)
                 train_time = int(time.time() - t1)
                 durations.append(train_time)
 

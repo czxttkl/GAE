@@ -10,7 +10,7 @@ sys.path.insert(0, '..')
 import time
 import numpy
 from baseline import Baseline
-from data_mangle.cv_fold_reader import CVFoldReader
+from data_mangle.cv_fold_reader import CVFoldDenseReader
 from utils import constants
 from fastFM.als import FMClassification
 from scipy.sparse import csr_matrix
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     baseline = BaselineFM(models=[FMClassification(rank=200, l2_reg_w=0.1, l2_reg_V=0.1),
                                   # add more grid search models here ...
                                   ],
-                          reader=CVFoldReader(data_path=constants.dota2_pickle, folds=10))
+                          reader=CVFoldDenseReader(data_path=constants.dota2_pickle, folds=10))
     baseline.cross_valid()
 
     # save best model

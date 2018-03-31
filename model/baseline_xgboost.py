@@ -6,12 +6,11 @@ sys.path.insert(0, '..')
 
 import numpy
 from baseline import Baseline
-from data_mangle.cv_fold_reader import CVFoldReader
+from data_mangle.cv_fold_dense_reader import CVFoldDenseReader
 from data_mangle.report_writer import ReportWriter
 from utils import constants
 import xgboost as xgb
 from sklearn.metrics import accuracy_score
-import time
 
 
 class MyXgboost():
@@ -53,6 +52,6 @@ if __name__ == "__main__":
                                        MyXgboost(nthread=50, nrounds=12, max_depth=6, l2_reg=20, eta=0.1),
                                        # add more grid search models here ...
                                        ],
-                               reader=CVFoldReader(data_path=constants.dota2_pickle, folds=10),
+                               reader=CVFoldDenseReader(data_path=constants.dota2_pickle, folds=10),
                                writer=ReportWriter('result.csv'))
     baseline.cross_valid()

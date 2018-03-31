@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, '..')
 
 from utils import constants
-from data_mangle.cv_fold_reader import CVFoldReader
+from data_mangle.cv_fold_reader import CVFoldDenseReader
 from data_mangle.mini_batcher import MiniBatcher
 from tf_model import TFModel
 import tensorflow as tf
@@ -119,5 +119,5 @@ class GAEModel(TFModel):
                self.best_valid_acc_round, self.test_acc, self.test_auc
 
 if __name__ == "__main__":
-    model = GAEModel(reader=CVFoldReader(data_path=constants.dota2_pickle, folds=10, seed=715))
+    model = GAEModel(reader=CVFoldDenseReader(data_path=constants.dota2_pickle, folds=10, seed=715))
     model.train_cv(embedding_size=75, batch_size=1000, early_stop_round=30000)

@@ -1,14 +1,15 @@
 """ Data reader for cross validation.
 This reader only works for HotS, HoN and Dota datatsets.
-This reader returns dense feature vectors
+This reader returns sparse feature vectors
 """
 from sklearn.model_selection import ShuffleSplit
 import pickle
 import numpy
 import time
+from scipy.sparse import csr_matrix
 
 
-class CVFoldDenseReader(object):
+class CVFoldSparseReader(object):
     def __init__(self, data_path, folds, seed=None):
         """
         Read data files and then split data into K folds.
@@ -67,13 +68,31 @@ class CVFoldDenseReader(object):
         return train_feature, M_o_train, test_feature, M_o_test
 
     def to_feature_matrix(self, M_r_C, M_b_C):
-        data = numpy.zeros((M_r_C.shape[0], 2 * self.M))
+        """
+        test:
+        import numpy
+        from scipy.sparse import csr_matrix
+        M_r_C = numpy.array([[0,1,2,3,4], [15,16,17,18,19]])
+        M_b_C = numpy.array([[5,6,7,8,9], [10,11,12,13,14]])
+        M = 20
+        Z = M_r_C.shape[0]
+        row = numpy.repeat(numpy.arange(Z), 10)
+        col = numpy.hstack((M_r_C, M_b_C)).flatten()
+        assert len(row) == len(col)
+        ones = numpy.ones((len(row), ))
+        data = csr_matrix((ones, (row, col)), shape=(Z, M))
+        data.toarray()
+        """
         t1 = time.time()
-        for z, (MrC, MbC) in enumerate(zip(M_r_C, M_b_C)):
-            data[z, MrC] = 1
-            data[z, self.M + MbC] = 1
+        assert M_r_C.shape[0] == M_b_C.shape[0]
+        Z = M_r_C.shape[0]
+        row = numpy.repeat(numpy.arange(Z), 10)
+        col = numpy.hstack((M_r_C, M_b_C)).flatten()
+        assert len(row) == len(col)
+        ones = numpy.ones((len(row),))
+        data = csr_matrix((ones, (row, col)), shape=(Z, self.M))
         print("finish feature matrix conversion. time:", time.time() - t1)
         return data
 
     def print_feature_config(self):
-        return "one_way_two_teams"
+        return "one_way_two_teams_sparse"

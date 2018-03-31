@@ -6,7 +6,7 @@ sys.path.insert(0, '..')
 
 import numpy
 from baseline import Baseline
-from data_mangle.cv_fold_reader import CVFoldReader
+from data_mangle.cv_fold_reader import CVFoldDenseReader
 from sklearn.linear_model import LogisticRegression
 from utils import constants
 
@@ -32,5 +32,5 @@ if __name__ == "__main__":
             models=[LogisticRegression(fit_intercept=False, n_jobs=-1, C=1.0, penalty='l2'),
                     # add more grid search models here ...
                     ],
-            reader=CVFoldReader(data_path=constants.hon_output_pickle, folds=10))
+            reader=CVFoldDenseReader(data_path=constants.hon_output_pickle, folds=10))
     baseline.cross_valid()

@@ -8,7 +8,7 @@ import numpy
 import time
 
 
-class CVFoldReader(object):
+class CVFoldDenseReader(object):
     def __init__(self, data_path, folds, seed=None):
         """
         Read data files and then split data into K folds.
@@ -76,4 +76,4 @@ class CVFoldReader(object):
         return data
 
     def print_feature_config(self):
-        return "one_way_two_teams"
+        return "one_way_two_teams_dense"
