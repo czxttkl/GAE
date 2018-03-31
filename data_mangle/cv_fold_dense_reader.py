@@ -1,4 +1,7 @@
-""" Data reader for cross validation. """
+""" Data reader for cross validation.
+This reader only works for HotS, HoN and Dota datatsets.
+This reader returns dense feature vectors
+"""
 from sklearn.model_selection import ShuffleSplit
 import pickle
 import numpy
