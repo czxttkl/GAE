@@ -98,26 +98,26 @@ class CVFoldSparseReader(object):
         data.toarray()
         """
         assert M_r_C.shape[0] == M_b_C.shape[0]
+        t1 = time.time()
+        Z = M_r_C.shape[0]
+
         if self.feature_config == 'one_way_two_teams':
-            t1 = time.time()
-            Z = M_r_C.shape[0]
             row = numpy.repeat(numpy.arange(Z), 10)
             col = numpy.hstack((M_r_C, M_b_C + self.M)).flatten()
             assert len(row) == len(col)
             vals = numpy.ones((len(row),))
             data = csr_matrix((vals, (row, col)), shape=(Z, 2 * self.M))
-            print("finish feature matrix conversion. time:", time.time() - t1)
-            return data
         elif self.feature_config == 'one_way_one_team':
-            t1 = time.time()
-            Z = M_r_C.shape[0]
             row = numpy.repeat(numpy.arange(Z), 10)
             col = numpy.hstack((M_r_C, M_b_C)).flatten()
             assert len(row) == len(col)
             vals = numpy.tile([1, 1, 1, 1, 1, -1, -1, -1, -1, -1], Z)
             data = csr_matrix((vals, (row, col)), shape=(Z, self.M))
-            print("finish feature matrix conversion. time:", time.time() - t1)
-            return data
+        else:
+            raise NotImplementedError
+
+        print("finish feature matrix conversion. time:", time.time() - t1)
+        return data
 
     def print_feature_config(self):
         # one_way: no interaction term
