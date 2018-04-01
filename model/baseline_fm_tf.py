@@ -21,9 +21,9 @@ class BaselineTFFM(Baseline):
 if __name__ == "__main__":
     fm200_reg0 = TFFMClassifier(
                         order=2,
-                        rank=20,
+                        rank=200,
                         optimizer=tf.train.AdamOptimizer(),
-                        n_epochs=10,
+                        n_epochs=50,
                         batch_size=1024,
                         init_std=0.001,
                         reg=0,
@@ -32,7 +32,8 @@ if __name__ == "__main__":
     baseline = BaselineTFFM(models=[fm200_reg0,
                                     # add more grid search models here ...
                                     ],
-                            reader=CVFoldSparseReader(data_path=constants.dota2_pickle, folds=10),
+                            reader=CVFoldSparseReader(data_path=constants.dota2_pickle, folds=10,
+                                                      feature_config='one_way_two_teams'),
                             writer=ReportWriter('result.csv'))
     baseline.cross_valid(show_progress=True)
 

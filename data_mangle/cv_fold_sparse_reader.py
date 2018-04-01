@@ -10,10 +10,12 @@ from scipy.sparse import csr_matrix
 
 
 class CVFoldSparseReader(object):
-    def __init__(self, data_path, folds, seed=None):
+    def __init__(self, data_path, folds, feature_config, seed=None):
         """
         Read data files and then split data into K folds.
         """
+        self.data_src = data_path.split('/')[-1].split('.')[0]
+        self.feature_config = feature_config
         self.read_data_from_file(data_path, folds, seed)
 
     def read_data_from_file(self, data_path, folds, seed):
@@ -47,8 +49,6 @@ class CVFoldSparseReader(object):
             self.train_split_idx[i], self.test_split_idx[i] = train_idx, test_idx
             i += 1
 
-        self.data_src = data_path.split('/')[-1].split('.')[0]
-
     def read_train_test_fold(self, i):
         """
         Read i-th fold of splitted train/test data
@@ -69,7 +69,7 @@ class CVFoldSparseReader(object):
 
     def to_feature_matrix(self, M_r_C, M_b_C):
         """
-        test:
+        test for one_way_two_teams:
         import numpy
         from scipy.sparse import csr_matrix
         M_r_C = numpy.array([[0,1,2,3,4], [15,16,17,18,19]])
@@ -79,20 +79,54 @@ class CVFoldSparseReader(object):
         row = numpy.repeat(numpy.arange(Z), 10)
         col = numpy.hstack((M_r_C, M_b_C + M)).flatten()
         assert len(row) == len(col)
-        ones = numpy.ones((len(row), ))
-        data = csr_matrix((ones, (row, col)), shape=(Z, 2*M))
+        vals = numpy.ones((len(row), ))
+        data = csr_matrix((vals, (row, col)), shape=(Z, 2*M))
         data.toarray()
-        """
-        t1 = time.time()
-        assert M_r_C.shape[0] == M_b_C.shape[0]
+
+        test for one_way_one_team:
+        import numpy
+        from scipy.sparse import csr_matrix
+        M_r_C = numpy.array([[0,1,2,3,4], [15,16,17,18,19]])
+        M_b_C = numpy.array([[15,16,17,18,19], [0,1,2,3,4]])
+        M = 20
         Z = M_r_C.shape[0]
         row = numpy.repeat(numpy.arange(Z), 10)
-        col = numpy.hstack((M_r_C, M_b_C + self.M)).flatten()
+        col = numpy.hstack((M_r_C, M_b_C)).flatten()
         assert len(row) == len(col)
-        ones = numpy.ones((len(row),))
-        data = csr_matrix((ones, (row, col)), shape=(Z, 2 * self.M))
-        print("finish feature matrix conversion. time:", time.time() - t1)
-        return data
+        vals = numpy.tile([1, 1, 1, 1, 1, -1, -1, -1, -1, -1], Z)
+        data = csr_matrix((vals, (row, col)), shape=(Z, M))
+        data.toarray()
+        """
+        assert M_r_C.shape[0] == M_b_C.shape[0]
+        if self.feature_config == 'one_way_two_teams':
+            t1 = time.time()
+            Z = M_r_C.shape[0]
+            row = numpy.repeat(numpy.arange(Z), 10)
+            col = numpy.hstack((M_r_C, M_b_C + self.M)).flatten()
+            assert len(row) == len(col)
+            vals = numpy.ones((len(row),))
+            data = csr_matrix((vals, (row, col)), shape=(Z, 2 * self.M))
+            print("finish feature matrix conversion. time:", time.time() - t1)
+            return data
+        elif self.feature_config == 'one_way_one_team':
+            t1 = time.time()
+            Z = M_r_C.shape[0]
+            row = numpy.repeat(numpy.arange(Z), 10)
+            col = numpy.hstack((M_r_C, M_b_C)).flatten()
+            assert len(row) == len(col)
+            vals = numpy.tile([1, 1, 1, 1, 1, -1, -1, -1, -1, -1], Z)
+            data = csr_matrix((vals, (row, col)), shape=(Z, self.M))
+            print("finish feature matrix conversion. time:", time.time() - t1)
+            return data
 
     def print_feature_config(self):
-        return "one_way_two_teams_sparse"
+        # one_way: no interaction term
+        # two teams: each team has a feature vector
+        if self.feature_config == 'one_way_two_teams':
+            return "one_way_two_teams_sparse"
+        # one team: feature vector is shared between two teams.
+        # red team sets feature components to 1, while blue team sets feature components to 0
+        elif self.feature_config == 'one_way_one_team':
+            return "one_way_one_team_sparse"
+        else:
+            return "feature_config_not_specified"
