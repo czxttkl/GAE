@@ -15,8 +15,11 @@ def collect_match():
                                                             {'player_in_match': None},
                                                             {'player_in_match': False}
                                                 ],
-                                                'player_in_match_history': True
-                                                }, no_cursor_timeout=True) \
+                                                'player_in_match_history': True,
+                                                'accountId': {
+                                                    '$mod': [myconfig.match_num_machine,
+                                                             myconfig.match_remainder]
+                                                }}, no_cursor_timeout=True) \
                                           .sort("_id", pymongo.ASCENDING):  # sort _id ascending so that crawl players according to match seed participants order
         account_id = player['accountId']
         for match_history in \
@@ -48,7 +51,7 @@ def collect_match():
 
 
 if __name__ == '__main__':
-    myconfig = MyConfig('config_chen.txt')
+    myconfig = MyConfig('config_huy.txt')
     config = cass.get_default_config()
     config['logging']['print_riot_api_key'] = True
     config['pipeline']['RiotAPI']['api_key'] = myconfig.riot_api_key

@@ -68,6 +68,6 @@ class MyPyMongo:
                   .format(match_history_dict['gameId'], match_history_dict['accountId']))
 
     def find_player_in_player_seed(self, account_id: int):
-        return self.db.player_seed.find({'accountId': account_id})
+        return self.db.player_seed.find_one({'accountId': account_id})
 
 

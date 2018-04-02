@@ -11,6 +11,8 @@ class MyConfig:
         self.match_seed_start_summoner_id = cs[1].split(':')[1]
         self.player_seed_match_history_num_machine = int(cs[2].split(':')[1])
         self.player_seed_match_history_remainder = int(cs[3].split(':')[1])
+        self.match_num_machine = int(cs[4].split(':')[1])
+        self.match_remainder = int(cs[5].split(':')[1])
 
     def request_error_handling(self):
         return \
