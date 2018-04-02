@@ -24,15 +24,21 @@ if __name__ == "__main__":
     kwargs = parse_parameters()
 
     feature_config = 'champion_summoner_two_teams' if not kwargs else kwargs.fm_featconfig
+    order = 2 if not kwargs else kwargs.fm_order
+    rank = 200 if not kwargs else kwargs.fm_rank
+    n_epochs = 5 if not kwargs else kwargs.fm_epoch
+    reg = 0 if not kwargs else kwargs.fm_reg
+    print('use parameter: feature_config: {}, order: {}, rank: {}, n_epochs: {}, reg: {}'
+          .format(feature_config, order, rank, n_epochs, reg))
 
     fm_model = TFFMClassifier(
-                        order=2 if not kwargs else kwargs.fm_order,
-                        rank=200 if not kwargs else kwargs.fm_rank,
+                        order=order,
+                        rank=rank,
                         optimizer=tf.train.AdamOptimizer(),
-                        n_epochs=5 if not kwargs else kwargs.fm_epoch,
+                        n_epochs=n_epochs,
                         batch_size=1024,
                         init_std=0.0000000001,
-                        reg=0 if not kwargs else kwargs.fm_reg,
+                        reg=reg,
                         input_type='sparse')
 
     baseline = BaselineTFFM(models=[fm_model,
