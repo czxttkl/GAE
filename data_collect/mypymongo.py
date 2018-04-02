@@ -44,6 +44,13 @@ class MyPyMongo:
         else:
             return False
 
+    def exist_match_id_in_match(self, match_id: int):
+        match_id = int(match_id)
+        if self.db.match.find({'id': match_id}).count() > 0:
+            return True
+        else:
+            return False
+
     def exist_account_id_in_player_seed(self, account_id: int):
         account_id = int(account_id)
         if self.db.player_seed.find({'accountId': account_id}).count() > 0:
