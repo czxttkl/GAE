@@ -3,8 +3,8 @@ import pprint
 from config.config import MyConfig
 
 import cassiopeia as cass
-from cassiopeia.core import Summoner, MatchHistory, Match
-from cassiopeia.data import Season
+from cassiopeia.core import Match
+from datapipelines.common import NotFoundError
 
 from data_collect.mypymongo import MyPyMongo
 import pymongo
@@ -34,15 +34,23 @@ def collect_match():
             match = Match(id=match_history['gameId'], region="NA")
 
             if not mypymongo.exist_match_id_in_match(match_history['gameId']):
-                a = match.duration  # call duration to fetch real match data
-                # match.timeline    # call time line to fetch time line
-                mypymongo.insert_match(match.to_json())
+                try:
+                    a = match.duration  # call duration to fetch real match data
+                    # match.timeline    # call time line to fetch time line
+                    mypymongo.insert_match(match.to_json())
+                    print("finish crawling match", match_history['gameId'], 'for', account_id,
+                          '. ', match.season, match.queue, match.creation, match.version)
+                # some match data can not be found
+                except NotFoundError:
+                    # change the match history's season, we will never see it again
+                    match_history['season'] = 0
+                    print("No match data found", match_history['gameId'], 'for', account_id)
+            else:
+                print("Match data exists", match_history['gameId'], 'for', account_id)
 
             match_history['match_history_in_match'] = True
             mypymongo.db.player_seed_match_history.find_one_and_replace(
                 {'accountId': account_id, 'gameId': match_history['gameId']}, match_history)
-            print("finish crawling match", match_history['gameId'], 'for', account_id,
-                  '. ', match.season, match.queue, match.creation, match.version)
 
         player['player_in_match'] = True
         mypymongo.db.player_seed.find_one_and_replace({'accountId': account_id}, player)
