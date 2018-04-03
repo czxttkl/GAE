@@ -99,6 +99,18 @@ class CVFoldLoLSparseReader(object):
             assert len(row) == len(col)
             vals = numpy.ones((len(row),))
             data = csr_matrix((vals, (row, col)), shape=(Z, 2 * (self.M + self.N)))
+        elif self.feature_config == 'champion_one_team':
+            row = numpy.repeat(numpy.arange(Z), 10)
+            col = numpy.hstack((M_r_C, M_b_C)).flatten()  # blue team champion idxs should shift M
+            assert len(row) == len(col)
+            vals = numpy.tile([1, 1, 1, 1, 1, -1, -1, -1, -1, -1], Z)
+            data = csr_matrix((vals, (row, col)), shape=(Z, self.M))
+        elif self.feature_config == 'summoner_one_team':
+            row = numpy.repeat(numpy.arange(Z), 10)
+            col = numpy.hstack((M_r_P, M_b_P)).flatten()  # blue team champion idxs should shift M
+            assert len(row) == len(col)
+            vals = numpy.tile([1, 1, 1, 1, 1, -1, -1, -1, -1, -1], Z)
+            data = csr_matrix((vals, (row, col)), shape=(Z, self.N))
         else:
             raise NotImplementedError
 
@@ -115,5 +127,11 @@ class CVFoldLoLSparseReader(object):
         # summoner + champion information
         elif self.feature_config == 'champion_summoner_two_teams':
             return "champion_summoner_two_teams_sparse"
+        # champion one team
+        if self.feature_config == 'champion_one_team':
+            return "champion_one_team_sparse"
+        # summoner one team
+        elif self.feature_config == 'summoner_one_team':
+            return "summoner_one_team_sparse"
         else:
             raise NotImplementedError
