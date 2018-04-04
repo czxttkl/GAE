@@ -52,6 +52,6 @@ if __name__ == "__main__":
                                        MyXgboost(nthread=50, nrounds=12, max_depth=6, l2_reg=20, eta=0.1),
                                        # add more grid search models here ...
                                        ],
-                               reader=CVFoldDenseReader(data_path=constants.dota2_pickle, folds=10),
+                               reader=CVFoldDenseReader(data_path=constants.dota_pickle, folds=10),
                                writer=ReportWriter('result.csv'))
     baseline.cross_valid()

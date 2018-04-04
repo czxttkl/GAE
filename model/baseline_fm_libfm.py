@@ -42,7 +42,7 @@ if __name__ == "__main__":
     baseline = BaselineFM(models=[FMClassification(rank=200, l2_reg_w=0.1, l2_reg_V=0.1),
                                   # add more grid search models here ...
                                   ],
-                          reader=CVFoldDenseReader(data_path=constants.dota2_pickle, folds=10))
+                          reader=CVFoldDenseReader(data_path=constants.dota_pickle, folds=10))
     baseline.cross_valid()
 
     # save best model

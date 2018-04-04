@@ -111,6 +111,13 @@ class CVFoldLoLSparseReader(object):
             assert len(row) == len(col)
             vals = numpy.tile([1, 1, 1, 1, 1, -1, -1, -1, -1, -1], Z)
             data = csr_matrix((vals, (row, col)), shape=(Z, self.N))
+        elif self.feature_config == 'champion_summoner_one_team':
+            row = numpy.repeat(numpy.arange(Z), 20)
+            col = numpy.hstack((M_r_C, M_b_C, M_r_P + self.M, M_b_P + self.M)).flatten()
+            assert len(row) == len(col)
+            vals = numpy.tile([1, 1, 1, 1, 1, -1, -1, -1, -1, -1,
+                               1, 1, 1, 1, 1, -1, -1, -1, -1, -1], Z)
+            data = csr_matrix((vals, (row, col)), shape=(Z, self.M + self.N))
         else:
             raise NotImplementedError
 
@@ -133,5 +140,8 @@ class CVFoldLoLSparseReader(object):
         # summoner one team
         elif self.feature_config == 'summoner_one_team':
             return "summoner_one_team_sparse"
+        # champion summoner one team
+        elif self.feature_config == 'champion_summoner_one_team':
+            return "champion_summoner_one_team_sparse"
         else:
             raise NotImplementedError

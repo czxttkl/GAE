@@ -4,12 +4,10 @@ sys.path.insert(0, '..')
 
 from data_mangle.report_writer import ReportWriter
 from baseline import Baseline
-from data_mangle.cv_fold_sparse_reader import CVFoldSparseReader
-from data_mangle.cv_fold_lol_sparse_reader import CVFoldLoLSparseReader
 from utils import constants
 from tffm import TFFMClassifier
 import tensorflow as tf
-from utils.parser import parse_parameters
+from utils.parser import parse_parameters, parse_reader
 
 
 class BaselineTFFM(Baseline):
@@ -23,13 +21,15 @@ class BaselineTFFM(Baseline):
 if __name__ == "__main__":
     kwargs = parse_parameters()
 
+    dataset = 'lol' if not kwargs else kwargs.dataset
     feature_config = 'champion_summoner_two_teams' if not kwargs else kwargs.fm_featconfig
     order = 2 if not kwargs else kwargs.fm_order
     rank = 200 if not kwargs else kwargs.fm_rank
     n_epochs = 5 if not kwargs else kwargs.fm_epoch
     reg = 0 if not kwargs else kwargs.fm_reg
-    print('use parameter: feature_config: {}, order: {}, rank: {}, n_epochs: {}, reg: {}'
-          .format(feature_config, order, rank, n_epochs, reg))
+    print('use parameter: dataset, feature_config: {}, order: {}, rank: {}, n_epochs: {}, reg: {}'
+          .format(dataset, feature_config, order, rank, n_epochs, reg))
+    reader = parse_reader(dataset, feature_config)
 
     fm_model = TFFMClassifier(
                         order=order,
@@ -44,8 +44,7 @@ if __name__ == "__main__":
     baseline = BaselineTFFM(models=[fm_model,
                                     # add more grid search models here ...
                                     ],
-                            reader=CVFoldLoLSparseReader(data_path=constants.lol_pickle, folds=10,
-                                                         feature_config=feature_config),
+                            reader=reader,
                             writer=ReportWriter('result.csv'))
     baseline.cross_valid(show_progress=True)
 
