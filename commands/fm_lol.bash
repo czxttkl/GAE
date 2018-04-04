@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH --job-name=fm
-#SBATCH --error=slurm/fm
-#SBATCH --out=slurm/fm
+#SBATCH --error=slurm/fm_err
+#SBATCH --out=slurm/fm_out
 #SBATCH --exclusive
 #SBATCH --partition=ser-par-10g-5
 #SBATCH -N 1
@@ -12,35 +12,5 @@ source activate myenv
 work=/home/chen.zhe/GAE/model
 cd $work
 
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.00001 --fm_featconfig=champion_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.0001 --fm_featconfig=champion_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.001 --fm_featconfig=champion_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.01 --fm_featconfig=champion_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.1 --fm_featconfig=champion_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=1.0 --fm_featconfig=champion_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=10 --fm_featconfig=champion_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=100 --fm_featconfig=champion_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=1000 --fm_featconfig=champion_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=10000 --fm_featconfig=champion_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.00001 --fm_featconfig=summoner_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.0001 --fm_featconfig=summoner_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.001 --fm_featconfig=summoner_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.01 --fm_featconfig=summoner_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.1 --fm_featconfig=summoner_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=1.0 --fm_featconfig=summoner_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=10 --fm_featconfig=summoner_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=100 --fm_featconfig=summoner_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=1000 --fm_featconfig=summoner_one_team
-python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=10000 --fm_featconfig=summoner_one_team
-
-# python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.00001 --fm_featconfig=champion_summoner_one_team
-# python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.0001 --fm_featconfig=champion_summoner_one_team
-# python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.001 --fm_featconfig=champion_summoner_one_team
-# python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.01 --fm_featconfig=champion_summoner_one_team
-# python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=0.1 --fm_featconfig=champion_summoner_one_team
-# python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=1.0 --fm_featconfig=champion_summoner_one_team
-# python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=10 --fm_featconfig=champion_summoner_one_team
-# python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=100 --fm_featconfig=champion_summoner_one_team
-# python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=1000 --fm_featconfig=champion_summoner_one_team
-# python3.6 baseline_fm_tf.py --fm_order=1 --fm_rank=2 --fm_epoch=10 --fm_reg=10000 --fm_featconfig=champion_summoner_one_team
+python3.6 baseline_fm_tf.py --dataset=dota --fm_order=3 --fm_rank=200 --fm_epoch=10 --fm_reg=100. --fm_featconfig=one_way_two_teams
 

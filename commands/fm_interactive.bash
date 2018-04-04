@@ -34,4 +34,5 @@ python3.6 baseline_fm_tf.py --dataset=dota --fm_order=3 --fm_rank=200 --fm_epoch
 python3.6 baseline_fm_tf.py --dataset=dota --fm_order=3 --fm_rank=200 --fm_epoch=10 --fm_reg=1.0 --fm_featconfig=one_way_two_teams
 python3.6 baseline_fm_tf.py --dataset=dota --fm_order=3 --fm_rank=200 --fm_epoch=10 --fm_reg=10. --fm_featconfig=one_way_two_teams
 python3.6 baseline_fm_tf.py --dataset=dota --fm_order=3 --fm_rank=200 --fm_epoch=10 --fm_reg=100. --fm_featconfig=one_way_two_teams
+python3.6 baseline_fm_tf.py --dataset=dota --fm_order=3 --fm_rank=200 --fm_epoch=10 --fm_reg=100. --fm_featconfig=one_way_two_teams
 
