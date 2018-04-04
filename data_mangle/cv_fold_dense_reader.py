@@ -9,10 +9,12 @@ import time
 
 
 class CVFoldDenseReader(object):
-    def __init__(self, data_path, folds, seed=None):
+    def __init__(self, data_path, folds, feature_config, seed=None):
         """
         Read data files and then split data into K folds.
         """
+        self.data_src = data_path.split('/')[-1].split('.')[0]
+        self.feature_config = feature_config
         self.read_data_from_file(data_path, folds, seed)
 
     def read_data_from_file(self, data_path, folds, seed):
@@ -46,8 +48,6 @@ class CVFoldDenseReader(object):
             self.train_split_idx[i], self.test_split_idx[i] = train_idx, test_idx
             i += 1
 
-        self.data_src = data_path.split('/')[-1].split('.')[0]
-
     def read_train_test_fold(self, i):
         """
         Read i-th fold of splitted train/test data
@@ -67,13 +67,34 @@ class CVFoldDenseReader(object):
         return train_feature, M_o_train, test_feature, M_o_test
 
     def to_feature_matrix(self, M_r_C, M_b_C):
-        data = numpy.zeros((M_r_C.shape[0], 2 * self.M))
+        assert M_r_C.shape[0] == M_b_C.shape[0]
         t1 = time.time()
-        for z, (MrC, MbC) in enumerate(zip(M_r_C, M_b_C)):
-            data[z, MrC] = 1
-            data[z, self.M + MbC] = 1
+        Z = M_r_C.shape[0]
+
+        if self.feature_config == 'one_way_two_teams':
+            data = numpy.zeros((Z, 2 * self.M))
+            for z, (MrC, MbC) in enumerate(zip(M_r_C, M_b_C)):
+                data[z, MrC] = 1
+                data[z, self.M + MbC] = 1
+        elif self.feature_config == 'one_way_one_team':
+            data = numpy.zeros((Z, self.M))
+            for z, (MrC, MbC) in enumerate(zip(M_r_C, M_b_C)):
+                data[z, MrC] = 1
+                data[z, MbC] = -1
+        else:
+            raise NotImplementedError
+
         print("finish feature matrix conversion. time:", time.time() - t1)
         return data
 
     def print_feature_config(self):
-        return "one_way_two_teams_dense"
+        # one_way: no interaction term
+        # two teams: each team has a feature vector
+        if self.feature_config == 'one_way_two_teams':
+            return "one_way_two_teams_dense"
+        # one team: feature vector is shared between two teams.
+        # red team sets feature components to 1, while blue team sets feature components to -1
+        elif self.feature_config == 'one_way_one_team':
+            return "one_way_one_team_dense"
+        else:
+            return "feature_config_not_specified"

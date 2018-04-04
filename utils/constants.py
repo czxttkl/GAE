@@ -1,5 +1,8 @@
-# DOTA 2
-dota_pickle = '../input/dota2.pickle'
+# DOTA 2 (2015 matches)
+dota_pickle = '../input/dota.pickle'
+
+# DOTA 2  (2016 matches)
+dota2_pickle = '../input/dota2.pickle'
 
 # heros of the storm data
 hots_output_pickle = '../input/hots.pickle'

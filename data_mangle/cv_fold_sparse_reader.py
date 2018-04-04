@@ -125,7 +125,7 @@ class CVFoldSparseReader(object):
         if self.feature_config == 'one_way_two_teams':
             return "one_way_two_teams_sparse"
         # one team: feature vector is shared between two teams.
-        # red team sets feature components to 1, while blue team sets feature components to 0
+        # red team sets feature components to 1, while blue team sets feature components to -1
         elif self.feature_config == 'one_way_one_team':
             return "one_way_one_team_sparse"
         else:
