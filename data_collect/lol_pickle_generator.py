@@ -91,6 +91,7 @@ if __name__ == "__main__":
 
     mypymongo = MyPyMongo()
 
+    # NOTE, match_id2idx_dict is not correct after shuffling!!!
     M_o, M_r_C, M_b_C, M_r_P, M_b_P, \
         match_id2idx_dict, summoner_id2idx_dict, champion_id2idx_dict, \
         Z, N, M = get_data()
