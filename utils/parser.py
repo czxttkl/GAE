@@ -26,6 +26,8 @@ def parse_reader(dataset, feature_config):
         reader = CVFoldLoLSparseReader(data_path=constants.lol_pickle, folds=10, feature_config=feature_config)
     elif dataset == 'dota':
         reader = CVFoldSparseReader(data_path=constants.dota_pickle, folds=10, feature_config=feature_config)
+    elif dataset == 'dota2':
+        reader = CVFoldSparseReader(data_path=constants.dota2_pickle, folds=10, feature_config=feature_config)
     else:
         raise NotImplementedError
     return reader

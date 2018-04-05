@@ -27,7 +27,7 @@ if __name__ == "__main__":
     rank = 200 if not kwargs else kwargs.fm_rank
     n_epochs = 5 if not kwargs else kwargs.fm_epoch
     reg = 0 if not kwargs else kwargs.fm_reg
-    print('use parameter: dataset, feature_config: {}, order: {}, rank: {}, n_epochs: {}, reg: {}'
+    print('use parameter: dataset {}, feature_config: {}, order: {}, rank: {}, n_epochs: {}, reg: {}'
           .format(dataset, feature_config, order, rank, n_epochs, reg))
     reader = parse_reader(dataset, feature_config)
 
