@@ -7,6 +7,7 @@ from cassiopeia.core import Summoner, MatchHistory, Match
 from cassiopeia.data import Season
 
 from data_collect.mypymongo import MyPyMongo
+import pymongo
 
 
 def collect_player_seed_match_history():
@@ -18,7 +19,7 @@ def collect_player_seed_match_history():
                                                     'accountId': {
                                                         '$mod': [myconfig.player_seed_match_history_num_machine,
                                                                  myconfig.player_seed_match_history_remainder]
-                                                    }}, no_cursor_timeout=True)
+                                                    }}, sort=[('_id', pymongo.ASCENDING)])
         if player is None:
             break
 
