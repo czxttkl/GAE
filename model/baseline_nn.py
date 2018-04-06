@@ -42,3 +42,5 @@ if __name__ == "__main__":
             reader=reader,
             writer=ReportWriter('result.csv'))
     baseline.cross_valid()
+
+    # baseline.save_model()

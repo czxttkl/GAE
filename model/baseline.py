@@ -2,6 +2,7 @@ import copy
 import numpy
 import time
 from sklearn.metrics import roc_auc_score, accuracy_score
+import pickle
 
 
 class Baseline(object):
@@ -61,6 +62,7 @@ class Baseline(object):
             self.writer.write_result(self.reader.data_src, self.print_model(model), self.reader.print_feature_config(),
                                      numpy.mean(durations), numpy.mean(train_accs), numpy.mean(train_aucs),
                                      numpy.mean(test_accs), numpy.mean(test_aucs))
+            self.last_model = model
 
     def to_data_labels(self, fold):
         """ Read a specific fold. Convert to model usable feature matrix and label vector. """
@@ -70,4 +72,9 @@ class Baseline(object):
     def print_model(self, model):
         """ return description of a model as a string """
         return "null"
+
+    def save_model(self):
+        assert self.last_model is not None
+        with open('../output/{}_{}.pickle'.format(self.print_model(self.last_model), self.reader.data_src), 'wb') as f:
+            pickle.dump((self.last_model, self.reader.M), f)
 
