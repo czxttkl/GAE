@@ -48,6 +48,13 @@ def parse_reader(dataset, feature_config, density):
             reader = CVFoldSparseReader(data_path=constants.dota2_pickle, folds=10, feature_config=feature_config)
         else:
             raise NotImplementedError
+    elif dataset == 'dota3':
+        if density == 'dense':
+            reader = CVFoldDenseReader(data_path=constants.dota3_pickle, folds=10, feature_config=feature_config)
+        elif density == 'sparse':
+            reader = CVFoldSparseReader(data_path=constants.dota3_pickle, folds=10, feature_config=feature_config)
+        else:
+            raise NotImplementedError
     else:
         raise NotImplementedError
     return reader

@@ -42,3 +42,6 @@ python3.6 baseline_fm_tf.py --dataset=dota2 --fm_order=2 --fm_rank=400 --fm_epoc
 python3.6 baseline_fm_tf.py --dataset=dota2 --fm_order=2 --fm_rank=400 --fm_epoch=10 --fm_reg=10. --fm_featconfig=one_way_two_teams
 python3.6 baseline_fm_tf.py --dataset=dota2 --fm_order=2 --fm_rank=400 --fm_epoch=10 --fm_reg=100. --fm_featconfig=one_way_two_teams
 
+
+python3.6 baseline_fm_tf.py --dataset=dota --density=sparse --fm_order=3 --fm_rank=50 --fm_epoch=10 --fm_reg=0.01 --fm_featconfig=one_way_two_teams
+

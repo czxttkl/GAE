@@ -2,7 +2,6 @@
 Use this file to generate input/lol.pickle
 """
 import numpy
-from random import shuffle
 import pickle
 import time
 from data_collect.mypymongo import MyPyMongo
