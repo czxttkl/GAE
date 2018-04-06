@@ -4,7 +4,6 @@ sys.path.insert(0, '..')
 
 from data_mangle.report_writer import ReportWriter
 from baseline import Baseline
-from utils import constants
 from tffm import TFFMClassifier
 import tensorflow as tf
 from utils.parser import parse_parameters, parse_reader

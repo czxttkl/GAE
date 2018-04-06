@@ -4,10 +4,7 @@ Pull data from Dota2
 import json
 import numpy
 import pickle
-import os
 from datetime import datetime
-import pprint
-from collections import defaultdict
 
 
 def update_dict(d: dict, key):
