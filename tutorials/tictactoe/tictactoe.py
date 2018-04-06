@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from math import log, sqrt
+import time
 
 
 class Board:
@@ -20,6 +21,7 @@ class Board:
         copy = Board()
         copy.player = self.player
         copy.state = np.copy(self.state)
+        copy.move_cnt = np.copy(self.move_cnt)
         return copy
 
     def move(self, move):
@@ -29,7 +31,8 @@ class Board:
         """
         if np.any(self.state[:, move[0], move[1]]):
             print('move collision')
-            return
+            raise AssertionError
+
         self.state[self.player][move[0], move[1]] = 1
         self.move_cnt[self.player] += 1
         self.player ^= 1
@@ -61,6 +64,7 @@ class Board:
         print(self.state[0])
         print('player 1, move', self.move_cnt[1])
         print(self.state[1])
+
 
 class Node:
     """
@@ -101,6 +105,8 @@ class Node:
 
 
 def UCT(rootstate, maxiters):
+    t1 = time.time()
+
     root = Node(board=rootstate)
 
     for i in range(maxiters):
@@ -138,13 +144,15 @@ def UCT(rootstate, maxiters):
             node = node.parent
 
     s = sorted(root.children, key=lambda c: c.wins / c.visits)
+
+    print('move time:', time.time() - t1)
     return s[-1].action
 
 
 b = Board()  # instantiate board
 # while there are moves left to play and neither player has won
 while b.get_moves() != [] and not b.result():
-    a = UCT(b, 1000)  # get next best move
+    a = UCT(b, 10000)  # get next best move
     b.move(a)  # make move
     b.print_state()  # show state
     print('-------------------------------')
