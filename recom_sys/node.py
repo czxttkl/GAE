@@ -7,13 +7,13 @@ class Node:
     the monte carlo search tree
     """
 
-    def __init__(self, parent=None, action=None, board=None):
+    def __init__(self, parent=None, action=None, draft=None):
         self.parent = parent
-        self.board = board
+        self.draft = draft
         self.children = []
         self.wins = 0
         self.visits = 0
-        self.untried_actions = board.get_moves()
+        self.untried_actions = draft.get_moves()
         self.action = action
 
     def select(self):
@@ -29,7 +29,7 @@ class Node:
         expand parent node (self) by adding child
         node with given action and state
         """
-        child = Node(parent=self, action=action, board=board)
+        child = Node(parent=self, action=action, draft=board)
         self.untried_actions.remove(action)
         self.children.append(child)
         return child
