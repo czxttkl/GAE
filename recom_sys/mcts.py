@@ -16,7 +16,8 @@ class Draft:
             self.outcome_model, self.M = self.load(env_path)
             self.state = np.zeros([self.M])
             self.move_cnt = np.zeros([2], dtype=int)
-            self.player = 0  # current player's turn, player 0 will pick first and be red team
+            self.player = 0  # current player's turn
+            # player 0 will pick first and be red team; player 1 will pick next and be blue team
             self.player_models = [self.construct_player_model(player0_model_str),
                                   self.construct_player_model(player1_model_str)]
 
@@ -62,7 +63,7 @@ class Draft:
         the move for the current player
         """
         print('choose move: player {} ({}), move_cnt: {}, move: {}'
-              .format(self.player, self.player_models[self.player].name, self.move_cnt[self.player], move))
+              .format(self.player, self.get_player().name, self.move_cnt[self.player], move))
         # player 0 -> place 1,  player 1 -> place -1
         val = - self.player * 2 + 1
         if len(move) == 1:
@@ -88,12 +89,12 @@ class Draft:
         if (self.player == 0 and self.move_cnt[self.player] == 0) \
                 or (self.player == 1 and self.move_cnt[self.player] == 4):
             print('get moves: player {} ({}), move_cnt: {}, moves: {}'
-                  .format(self.player, self.player_models[self.player].name, self.move_cnt[self.player], zero_indices))
+                  .format(self.player, self.get_player().name, self.move_cnt[self.player], zero_indices))
             return zero_indices
         else:
             combo_zero_indices = list(combinations(zero_indices, 2))
             print('get moves: player {} ({}), move_cnt: {}, moves: {}'
-                  .format(self.player, self.player_models[self.player].name, self.move_cnt[self.player], combo_zero_indices))
+                  .format(self.player, self.get_player().name, self.move_cnt[self.player], combo_zero_indices))
             return combo_zero_indices
 
     def end(self):
@@ -115,8 +116,8 @@ if __name__ == '__main__':
 
     env_path = 'NN_hiddenunit120_dota.pickle'
     player0_model_str = 'random'   # red team
-    # player1_model_str = 'mcts'     # blue team
-    player1_model_str = 'random'     # blue team
+    player1_model_str = 'mcts'     # blue team
+    # player1_model_str = 'random'     # blue team
     num_matches = 10000
 
     result = []
@@ -131,4 +132,4 @@ if __name__ == '__main__':
         final_red_team_win_rate = d.eval()
         result.append(final_red_team_win_rate)
 
-    print('average red team win rate', np.average(result))
+    print('{} matches, average red team win rate {}'.format(num_matches, np.average(result)))

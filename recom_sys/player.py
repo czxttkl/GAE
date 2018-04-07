@@ -53,7 +53,9 @@ class MCTSPlayer:
             # reverse the result if player at the node lost the rollout game
             while node != None:
                 # red team player
-                if node.draft.player == 0:
+                # node.draft.player is already the next player.
+                # But what we want is the node's associated player
+                if node.draft.player ^ 1 == 0:
                     result = tmp_draft.eval()
                 # blue team player
                 else:
