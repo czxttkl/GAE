@@ -143,16 +143,16 @@ if __name__ == "__main__":
     optparser.add_option('-f', '--inputFile',
                          dest='input',
                          help='filename containing csv',
-                         default=None)
+                         default='INTEGRATED-DATASET.csv')
     optparser.add_option('-s', '--minSupport',
                          dest='minS',
                          help='minimum support value',
-                         default=0.15,
+                         default=0.17,
                          type='float')
     optparser.add_option('-c', '--minConfidence',
                          dest='minC',
                          help='minimum confidence value',
-                         default=0.6,
+                         default=0.0,
                          type='float')
 
     (options, args) = optparser.parse_args()
