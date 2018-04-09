@@ -1,9 +1,8 @@
 import numpy as np
-import random
+import time
 import pickle
-from itertools import combinations
-from recom_sys.node import Node
-from recom_sys.player import RandomPlayer, MCTSPlayer
+import logging
+from player import RandomPlayer, MCTSPlayer
 
 
 class Draft:
@@ -62,17 +61,11 @@ class Draft:
         take move of form [x,y] and play
         the move for the current player
         """
-        print('choose move: player {} ({}), move_cnt: {}, move: {}'
-              .format(self.player, self.get_player().name, self.move_cnt[self.player], move))
         # player 0 -> place 1,  player 1 -> place -1
         val = - self.player * 2 + 1
-        if len(move) == 1:
-            self.state[move] = val
-            self.move_cnt[self.player] += 1
-        else:
-            self.state[move[0]] = val
-            self.state[move[1]] = val
-            self.move_cnt[self.player] += 2
+        self.state[move] = val
+        self.move_cnt[self.player] += 1
+        # logger.info('choose move: player {} ({}), move_cnt: {}, move: {}'.format(self.player, self.get_player().name, self.move_cnt[self.player], move))
         self.player ^= 1
 
     def get_moves(self):
@@ -82,20 +75,9 @@ class Draft:
         """
         if self.end():
             return []
-
         zero_indices = np.argwhere(self.state == 0).tolist()
-        # only need to select one champion for the first player's first pick
-        # or the second player's last pick
-        if (self.player == 0 and self.move_cnt[self.player] == 0) \
-                or (self.player == 1 and self.move_cnt[self.player] == 4):
-            print('get moves: player {} ({}), move_cnt: {}, moves: {}'
-                  .format(self.player, self.get_player().name, self.move_cnt[self.player], zero_indices))
-            return zero_indices
-        else:
-            combo_zero_indices = list(combinations(zero_indices, 2))
-            print('get moves: player {} ({}), move_cnt: {}, moves: {}'
-                  .format(self.player, self.get_player().name, self.move_cnt[self.player], combo_zero_indices))
-            return combo_zero_indices
+        # logger.info('get moves: player {} ({}), move_cnt: {}, moves: {}'.format(self.player, self.get_player().name, self.move_cnt[self.player], zero_indices))
+        return zero_indices
 
     def end(self):
         """
@@ -106,30 +88,51 @@ class Draft:
         return False
 
     def print_state(self):
-        print('player 0 ({}), move {}'.format(self.player_models[0].name, self.move_cnt[0]))
-        print(np.argwhere(self.state == 1))
-        print('player 1 ({}), move {}'.format(self.player_models[1].name, self.move_cnt[1]))
-        print(np.argwhere(self.state == -1))
+        # logger.info('player 0 ({}), move {}'.format(self.player_models[0].name, self.move_cnt[0]))
+        # logger.info(np.argwhere(self.state == 1))
+        # logger.info('player 1 ({}), move {}'.format(self.player_models[1].name, self.move_cnt[1]))
+        # logger.info(np.argwhere(self.state == -1))
+        # logger.info('---------------------------------------')
+        pass
+
+    def print_move(self, match_id, move_duration):
+        last_player = self.player ^ 1
+        logger.warning('match {} player {} ({}) move_cnt {} duration: {:.3f}'
+                       .format(match_id, last_player, self.player_models[last_player].name,
+                               self.move_cnt[last_player], move_duration))
 
 
 if __name__ == '__main__':
+    logger = logging.getLogger('mcts')
+    logger.addHandler(logging.StreamHandler())
 
+    logger.setLevel(logging.WARNING)
     env_path = 'NN_hiddenunit120_dota.pickle'
     player0_model_str = 'random'   # red team
     player1_model_str = 'mcts'     # blue team
     # player1_model_str = 'random'     # blue team
-    num_matches = 10000
+    num_matches = 1
 
-    result = []
+    results = []
+    times = []
     for i in range(num_matches):
+        t1 = time.time()
         d = Draft(env_path, player0_model_str, player1_model_str)  # instantiate board
+
         while not d.end():
             p = d.get_player()
+            t2 = time.time()
             a = p.get_move()
-            d.move(a)  # make move
-            d.print_state()  # show state
-            print('-------------------------------')
-        final_red_team_win_rate = d.eval()
-        result.append(final_red_team_win_rate)
+            d.move(a)
+            d.print_state()
+            d.print_move(match_id=i, move_duration=time.time()-t2)
 
-    print('{} matches, average red team win rate {}'.format(num_matches, np.average(result)))
+        final_red_team_win_rate = d.eval()
+        duration =time.time() - t1
+        logger.warning('match; {}, time: {:.3F}, red team win rate: {:.5f}'
+                       .format(i, duration, final_red_team_win_rate))
+        results.append(final_red_team_win_rate)
+        times.append(duration)
+
+    logger.warning('{} matches, average time {}, average red team win rate {}'
+                   .format(num_matches, np.average(times), np.average(results)))
