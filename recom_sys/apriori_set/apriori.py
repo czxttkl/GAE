@@ -7,10 +7,12 @@ Usage:
     $python apriori.py -f DATASET.csv -s 0.15 -c 0.6
 
     $python apriori.py -f INTEGRATED-DATASET.csv -s 0.17 -c 0
+
 This script is copied and modified from: https://github.com/asaini/Apriori
 """
 
 import sys
+import time
 
 from itertools import chain, combinations
 from collections import defaultdict
@@ -121,11 +123,12 @@ def printResults(items, rules):
     # x = item, support
     for item, support in sorted(items, key=lambda x: x[1]):
         print("item: %s , %.3f" % (str(item), support))
-    print("\n------------------------ RULES:")
-    # rule, confidence
-    for rule, confidence in sorted(rules, key=lambda x: x[1]):
-        pre, post = rule
-        print("Rule: %s ==> %s , %.3f" % (str(pre), str(post), confidence))
+    print(len(items), 'rules')
+    # print("\n------------------------ RULES:")
+    # # rule, confidence
+    # for rule, confidence in sorted(rules, key=lambda x: x[1]):
+    #     pre, post = rule
+    #     print("Rule: %s ==> %s , %.3f" % (str(pre), str(post), confidence))
 
 
 def dataFromFile(fname):
@@ -169,6 +172,9 @@ if __name__ == "__main__":
     minSupport = options.minS
     minConfidence = options.minC
 
+    t1 = time.time()
     items, rules = runApriori(inFile, minSupport, minConfidence)
+    duration = time.time() - t1
 
     printResults(items, rules)
+    print("duration", duration)
