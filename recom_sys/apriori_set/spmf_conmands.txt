@@ -1,2 +1,0 @@
-java -jar spmf.jar run Apriori_with_hash_tree dota_win_team.txt output.txt 0.01% 30
-java -jar spmf.jar run Apriori_with_hash_tree dota_lose_team.txt dota_lose_team_output.txt 0.01% 30
