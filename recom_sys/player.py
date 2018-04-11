@@ -142,8 +142,6 @@ class HeroLineUpPlayer(Player):
                     continue
                 self.lose_rules[frozenset(items)] = support / match_num
 
-        print()
-
     def get_move(self):
         # first move, pick champion according to select distribution
         if self.draft.move_cnt[0] == 0 and self.draft.move_cnt[1] == 0:

@@ -99,47 +99,55 @@ class Draft:
 
     def print_move(self, match_id, move_duration):
         last_player = self.player ^ 1
-        logger.warning('match {} player {} ({}) move_cnt {} duration: {:.3f}'
-                       .format(match_id, last_player, self.player_models[last_player].name,
-                               self.move_cnt[last_player], move_duration))
+        move_str = 'match {} player {} ({}) move_cnt {} duration: {:.3f}' \
+            .format(match_id, last_player, self.player_models[last_player].name,
+                    self.move_cnt[last_player], move_duration)
+        logger.warning(move_str)
+        return move_str
+
+
+def experiment(match_id, player0_model_str, player1_model_str, env_path):
+    t1 = time.time()
+    d = Draft(env_path, player0_model_str, player1_model_str)  # instantiate board
+
+    move_str = ''
+    while not d.end():
+        p = d.get_player()
+        t2 = time.time()
+        a = p.get_move()
+        d.move(a)
+        d.print_state()
+        d.print_move(match_id=match_id, move_duration=time.time() - t2) + '\n'
+
+    final_red_team_win_rate = d.eval()
+    duration = time.time() - t1
+    logger.warning('match: {}, time: {:.3F}, red team win rate: {:.5f}\n'
+                   .format(match_id, duration, final_red_team_win_rate))
+
+    return final_red_team_win_rate, duration
 
 
 if __name__ == '__main__':
     logger = logging.getLogger('mcts')
     logger.addHandler(logging.StreamHandler())
-
     logger.setLevel(logging.WARNING)
-    env_path = 'NN_hiddenunit120_dota.pickle'
+
+    env_path = 'NN_hiddenunit120_dota.pickle'  # outcome predictor
     # player0_model_str = 'random'   # red team
     player0_model_str = 'mcts'   # red team
     # player0_model_str = 'hero_lineup'   # red team
     # player1_model_str = 'mcts'     # blue team
     player1_model_str = 'hero_lineup'     # blue team
     # player1_model_str = 'random'     # blue team
-    num_matches = 100
+    num_matches = 1
     max_iters = 30000
 
-    results = []
-    times = []
+    red_team_win_rates, times = [], []
     for i in range(num_matches):
-        t1 = time.time()
-        d = Draft(env_path, player0_model_str, player1_model_str)  # instantiate board
+        res = experiment(i, player0_model_str, player1_model_str, env_path)
+        red_team_win_rates.append(res[0])
+        times.append(res[1])
 
-        while not d.end():
-            p = d.get_player()
-            t2 = time.time()
-            a = p.get_move()
-            d.move(a)
-            d.print_state()
-            d.print_move(match_id=i, move_duration=time.time()-t2)
-
-        final_red_team_win_rate = d.eval()
-        duration =time.time() - t1
-        logger.warning('match: {}, time: {:.3F}, red team win rate: {:.5f}\n'
-                       .format(i, duration, final_red_team_win_rate))
-        results.append(final_red_team_win_rate)
-        times.append(duration)
-
-    logger.warning('{} matches, {} vs. {}. average time {:.5f}, average red team win rate {.5f}, std {.5f}'
+    logger.warning('{} matches, {} vs. {}. average time {:.5f}, average red team win rate {:.5f}, std {:.5f}'
                    .format(num_matches, player0_model_str, player1_model_str,
-                           np.average(times), np.average(results), np.std(results)))
+                           np.average(times), np.average(red_team_win_rates), np.std(red_team_win_rates)))
