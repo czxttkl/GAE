@@ -145,7 +145,7 @@ if __name__ == '__main__':
     # red team
     player0_model_str = 'hero_lineup' if not kwargs else kwargs.player0
     # blue team
-    player1_model_str = 'random' if not kwargs else kwargs.player1
+    player1_model_str = 'mcts' if not kwargs else kwargs.player1
     num_matches = 1 if not kwargs else kwargs.num_matches
     max_iters = 30000 if not kwargs else kwargs.max_iters
 
@@ -161,14 +161,13 @@ if __name__ == '__main__':
         with open(test_result_path, 'w') as f:
             line = "num_matches, time, player0, player1, red_team_win_rate, std, mcts_max_iters\n"
             f.write(line)
-
-        # write data
+    # write data
     with open(test_result_path, 'a') as f:
         line = "{}, {:.5f}, {}, {}, {:.5f}, {:.5f}, {}\n". \
             format(num_matches, np.average(times), player0_model_str, player1_model_str,
                    np.average(red_team_win_rates), np.std(red_team_win_rates), max_iters)
         f.write(line)
 
-    logger.warning('{} matches, {} vs. {}. average time {:.5f}, average red team win rate {:.5f}, std {:.5f}'
+    logger.warning('{} matches, {} vs. {}. average time {:.5f}, average red team win rate {:.5f}, std {:.5f}, max_iters {}'
                    .format(num_matches, player0_model_str, player1_model_str,
-                           np.average(times), np.average(red_team_win_rates), np.std(red_team_win_rates)))
+                           np.average(times), np.average(red_team_win_rates), np.std(red_team_win_rates), max_iters))
