@@ -6,7 +6,7 @@ from data_mangle.report_writer import ReportWriter
 from baseline import Baseline
 from tffm import TFFMClassifier
 import tensorflow as tf
-from utils.parser import parse_parameters, parse_reader
+from utils.parser import parse_ml_parameters, parse_reader
 
 
 class BaselineTFFM(Baseline):
@@ -18,7 +18,7 @@ class BaselineTFFM(Baseline):
 
 
 if __name__ == "__main__":
-    kwargs = parse_parameters()
+    kwargs = parse_ml_parameters()
 
     dataset = 'lol' if not kwargs else kwargs.dataset
     density = 'sparse' if not kwargs else kwargs.density

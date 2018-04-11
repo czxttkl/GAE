@@ -6,7 +6,7 @@ from data_mangle.cv_fold_dense_reader import CVFoldDenseReader
 from utils import constants
 
 
-def parse_parameters():
+def parse_ml_parameters():
     if len(sys.argv) < 2:
         print('no argument set. use default.')
         return None
@@ -58,5 +58,22 @@ def parse_reader(dataset, feature_config, density):
     else:
         raise NotImplementedError
     return reader
+
+
+def parse_mcts_parameters():
+    if len(sys.argv) < 2:
+        print('no argument set. use default.')
+        return None
+
+    parser = optparse.OptionParser(usage="usage: %prog [options]")
+    # max roll outs of MCTS
+    parser.add_option("--max_iters", dest="max_iters", type="int", default=0)
+    # number of matches to simulate
+    parser.add_option("--num_matches", dest="num_matches", type="int", default=0)
+    parser.add_option("--player0", dest="player0", type="string", default='')
+    parser.add_option("--player1", dest="player1", type="string", default='')
+    parser.add_option("--env_path", dest="env_path", type="string", default='')
+    (kwargs, args) = parser.parse_args()
+    return kwargs
 
 

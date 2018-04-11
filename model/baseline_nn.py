@@ -7,7 +7,7 @@ sys.path.insert(0, '..')
 from baseline import Baseline
 from sklearn.neural_network import MLPClassifier
 from data_mangle.report_writer import ReportWriter
-from utils.parser import parse_parameters, parse_reader
+from utils.parser import parse_ml_parameters, parse_reader
 
 
 class BaselineNN(Baseline):
@@ -18,7 +18,7 @@ class BaselineNN(Baseline):
 
 
 if __name__ == "__main__":
-    kwargs = parse_parameters()
+    kwargs = parse_ml_parameters()
 
     dataset = 'dota' if not kwargs else kwargs.dataset
     density = 'dense' if not kwargs else kwargs.density

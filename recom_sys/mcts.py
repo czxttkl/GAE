@@ -1,8 +1,13 @@
+import sys
+sys.path.insert(0, '..')
+
+import os
 import numpy as np
 import time
 import pickle
 import logging
 from player import RandomPlayer, MCTSPlayer, HeroLineUpPlayer
+from utils.parser import parse_mcts_parameters
 
 
 class Draft:
@@ -132,21 +137,37 @@ if __name__ == '__main__':
     logger.addHandler(logging.StreamHandler())
     logger.setLevel(logging.WARNING)
 
-    env_path = 'NN_hiddenunit120_dota.pickle'  # outcome predictor
-    # player0_model_str = 'random'   # red team
-    player0_model_str = 'mcts'   # red team
-    # player0_model_str = 'hero_lineup'   # red team
-    # player1_model_str = 'mcts'     # blue team
-    player1_model_str = 'hero_lineup'     # blue team
-    # player1_model_str = 'random'     # blue team
-    num_matches = 1
-    max_iters = 30000
+    kwargs = parse_mcts_parameters()
+
+    # outcome predictor load path
+    env_path = 'NN_hiddenunit120_dota.pickle' if not kwargs else kwargs.env_path
+    # possible player string: random, mcts, hero_lineup
+    # red team
+    player0_model_str = 'hero_lineup' if not kwargs else kwargs.player0
+    # blue team
+    player1_model_str = 'random' if not kwargs else kwargs.player1
+    num_matches = 1 if not kwargs else kwargs.num_matches
+    max_iters = 30000 if not kwargs else kwargs.max_iters
 
     red_team_win_rates, times = [], []
     for i in range(num_matches):
         res = experiment(i, player0_model_str, player1_model_str, env_path)
         red_team_win_rates.append(res[0])
         times.append(res[1])
+
+    # write header
+    test_result_path = 'mcts_result.csv'
+    if not os.path.exists(test_result_path):
+        with open(test_result_path, 'w') as f:
+            line = "num_matches, time, player0, player1, red_team_win_rate, std, mcts_max_iters\n"
+            f.write(line)
+
+        # write data
+    with open(test_result_path, 'a') as f:
+        line = "{}, {:.5f}, {}, {}, {:.5f}, {:.5f}, {}\n". \
+            format(num_matches, np.average(times), player0_model_str, player1_model_str,
+                   np.average(red_team_win_rates), np.std(red_team_win_rates), max_iters)
+        f.write(line)
 
     logger.warning('{} matches, {} vs. {}. average time {:.5f}, average red team win rate {:.5f}, std {:.5f}'
                    .format(num_matches, player0_model_str, player1_model_str,
