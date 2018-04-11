@@ -1,11 +1,24 @@
 import random
 from node import Node
 import logging
+import numpy
+import pickle
 
 logger = logging.getLogger('mcts')
 
 
-class RandomPlayer:
+class Player:
+
+    def get_first_move(self):
+        with open('select_dist/dota_select_dist.pickle', 'rb') as f:
+            a, p = pickle.load(f)
+            return numpy.random.choice(a, size=1, p=p)
+
+    def get_move(self):
+        raise NotImplementedError
+
+
+class RandomPlayer(Player):
 
     def __init__(self, draft):
         self.draft = draft
@@ -15,24 +28,32 @@ class RandomPlayer:
         """
         decide the next move
         """
+        # first move, pick champion according to select distribution
+        if self.draft.move_cnt[0] == 0 and self.draft.move_cnt[1] == 0:
+            return self.get_first_move()
+
         moves = self.draft.get_moves()
         return random.choice(moves)
 
 
-class MCTSPlayer:
+class MCTSPlayer(Player):
 
-    def __init__(self, draft):
+    def __init__(self, draft, maxiters):
         self.draft = draft
         self.name ='mcts'
+        self.maxiters = maxiters
 
     def get_move(self):
         """
         decide the next move
         """
-        maxiters = 30000
+        # first move, pick champion according to select distribution
+        if self.draft.move_cnt[0] == 0 and self.draft.move_cnt[1] == 0:
+            return self.get_first_move()
+
         root = Node(draft=self.draft)
 
-        for i in range(maxiters):
+        for i in range(self.maxiters):
             node = root
             tmp_draft = self.draft.copy()
 
@@ -76,3 +97,91 @@ class MCTSPlayer:
 
         s = sorted(root.children, key=lambda c: c.wins / c.visits)
         return s[-1].action
+
+
+class HeroLineUpPlayer(Player):
+
+    def __init__(self, draft):
+        self.draft = draft
+        self.name = 'hero_lineup'
+        self.load_rules(match_num=3056596,
+                        oppo_team_spmf_path='apriori/dota_oppo_team_output.txt',
+                        win_team_spmf_path='apriori/dota_win_team_output.txt',
+                        lose_team_spmf_path='apriori/dota_lose_team_output.txt')
+
+    def load_rules(self, match_num, oppo_team_spmf_path, win_team_spmf_path, lose_team_spmf_path):
+        self.oppo_1_rules = dict()
+        self.oppo_2_rules = dict()
+        with open(oppo_team_spmf_path, 'r') as f:
+            for line in f:
+                items, support = line.split(' #SUP: ')
+                items, support = list(map(int, items.strip().split(' '))), int(support.strip())
+                # S(-e), because -e is losing champion encoded in 1xxx
+                if len(items) == 1 and items[0] > 1000:
+                    self.oppo_1_rules[frozenset(items)] = support / match_num
+                elif len(items) == 2 and (items[0] < 1000 and items[1] > 1000):
+                    self.oppo_2_rules[frozenset(items)] = support / match_num
+                else:
+                    continue
+
+        self.win_rules = dict()
+        with open(win_team_spmf_path, 'r') as f:
+            for line in f:
+                items, support = line.split(' #SUP: ')
+                items, support = list(map(int, items.strip().split(' '))), int(support.strip())
+                if len(items) == 1:
+                    continue
+                self.win_rules[frozenset(items)] = support / match_num
+
+        self.lose_rules = dict()
+        with open(lose_team_spmf_path, 'r') as f:
+            for line in f:
+                items, support = line.split(' #SUP: ')
+                items, support = list(map(int, items.strip().split(' '))), int(support.strip())
+                if len(items) == 1:
+                    continue
+                self.lose_rules[frozenset(items)] = support / match_num
+
+        print()
+
+    def get_move(self):
+        # first move, pick champion according to select distribution
+        if self.draft.move_cnt[0] == 0 and self.draft.move_cnt[1] == 0:
+            return self.get_first_move()
+        player = self.draft.player
+        allies = frozenset(numpy.argwhere(self.draft.state == (- player * 2 + 1)).flatten().tolist())
+        oppo_player = player ^ 1
+        enemies = frozenset((numpy.argwhere(self.draft.state == (- oppo_player * 2 + 1)) + 1000).flatten().tolist())
+
+        R = list()
+
+        ally_candidates = list()
+        for key in self.win_rules:
+            intercept = allies & key
+            assoc = key - intercept
+            if len(intercept) > 0 and len(assoc) == 1:
+                win_sup = self.win_rules[key]
+                lose_sup = self.lose_rules.get(key, 0.0)   # lose support may not exist
+                win_rate = win_sup / (win_sup + lose_sup)
+                ally_candidates.append((allies, key, assoc, win_rate))
+        # select top 5 win rate association rules
+        ally_candidates = sorted(ally_candidates, key=lambda x: x[-1])[-5:]
+        R.extend([next(iter(a[-2])) for a in ally_candidates])
+
+        enemy_candidates = list()
+        for key in self.oppo_2_rules:
+            intercept = enemies & key
+            assoc = key - intercept
+            if len(intercept) == 1 and len(assoc) == 1:
+                confidence = self.oppo_2_rules[key] / self.oppo_1_rules[intercept]
+                enemy_candidates.append((enemies, key, assoc, confidence))
+        # select top 5 confidence association rules
+        enemy_candidates = sorted(enemy_candidates, key=lambda x: x[-1])[-5:]
+        R.extend([next(iter(e[-2])) for e in enemy_candidates])
+
+        if len(R) == 0:
+            moves = self.draft.get_moves()
+            return random.choice(moves)
+        else:
+            move = random.choice(R)
+            return move

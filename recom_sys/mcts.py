@@ -2,7 +2,7 @@ import numpy as np
 import time
 import pickle
 import logging
-from player import RandomPlayer, MCTSPlayer
+from player import RandomPlayer, MCTSPlayer, HeroLineUpPlayer
 
 
 class Draft:
@@ -25,9 +25,11 @@ class Draft:
 
     def construct_player_model(self, player_model_str):
         if player_model_str == 'random':
-            return RandomPlayer(self)
+            return RandomPlayer(draft=self)
         elif player_model_str == 'mcts':
-            return MCTSPlayer(self)
+            return MCTSPlayer(draft=self, maxiters=max_iters)
+        elif player_model_str == 'hero_lineup':
+            return HeroLineUpPlayer(draft=self)
         else:
             raise NotImplementedError
 
@@ -108,10 +110,14 @@ if __name__ == '__main__':
 
     logger.setLevel(logging.WARNING)
     env_path = 'NN_hiddenunit120_dota.pickle'
-    player0_model_str = 'random'   # red team
-    player1_model_str = 'mcts'     # blue team
+    # player0_model_str = 'random'   # red team
+    player0_model_str = 'mcts'   # red team
+    # player0_model_str = 'hero_lineup'   # red team
+    # player1_model_str = 'mcts'     # blue team
+    player1_model_str = 'hero_lineup'     # blue team
     # player1_model_str = 'random'     # blue team
-    num_matches = 1
+    num_matches = 100
+    max_iters = 30000
 
     results = []
     times = []
@@ -129,10 +135,11 @@ if __name__ == '__main__':
 
         final_red_team_win_rate = d.eval()
         duration =time.time() - t1
-        logger.warning('match; {}, time: {:.3F}, red team win rate: {:.5f}'
+        logger.warning('match: {}, time: {:.3F}, red team win rate: {:.5f}\n'
                        .format(i, duration, final_red_team_win_rate))
         results.append(final_red_team_win_rate)
         times.append(duration)
 
-    logger.warning('{} matches, average time {}, average red team win rate {}'
-                   .format(num_matches, np.average(times), np.average(results)))
+    logger.warning('{} matches, {} vs. {}. average time {:.5f}, average red team win rate {.5f}, std {.5f}'
+                   .format(num_matches, player0_model_str, player1_model_str,
+                           np.average(times), np.average(results), np.std(results)))
