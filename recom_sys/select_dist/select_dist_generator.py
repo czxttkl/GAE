@@ -1,5 +1,5 @@
 """
-Generate champion selection distribution
+Generate champion selection distribution, which will be used for sampling the first hero
 """
 import pickle
 from collections import defaultdict
