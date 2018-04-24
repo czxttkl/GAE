@@ -33,6 +33,9 @@ def collect_player_seed_match_history():
         i = 0
         for i, match in enumerate(match_history):
             match_dict = match.to_dict()
+            # match seed last match is on 1522428637
+            if match_dict['creation'].timestamp > 1522428637:
+                continue
             # season before SEASON 2018 will be skipped
             if match_dict['season'] < 11:
                 break
