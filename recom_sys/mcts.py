@@ -18,12 +18,16 @@ class Draft:
     def __init__(self, env_path=None, player0_model_str=None, player1_model_str=None):
         if env_path and player0_model_str and player1_model_str:
             self.outcome_model, self.M = self.load(env_path)
-            self.state = np.zeros([self.M])
-            self.move_cnt = np.zeros([2], dtype=int)
+            self.state = [[], []]
+            self.avail_moves = set(range(self.M))
+            self.move_cnt = [0, 0]
             self.player = 0  # current player's turn
             # player 0 will pick first and be red team; player 1 will pick next and be blue team
             self.player_models = [self.construct_player_model(player0_model_str),
                                   self.construct_player_model(player1_model_str)]
+
+    def get_state(self, player):
+        return self.state[player]
 
     def get_player(self):
         return self.player_models[self.player]
@@ -47,7 +51,10 @@ class Draft:
 
     def eval(self):
         assert self.end()
-        red_team_win_rate = self.outcome_model.predict_proba(self.state.reshape((1, -1)))[0, 1]
+        x = np.zeros((1, self.M))
+        x[0, self.state[0]] = 1
+        x[0, self.state[1]] = -1
+        red_team_win_rate = self.outcome_model.predict_proba(x)[0, 1]
         return red_team_win_rate
 
     def copy(self):
@@ -57,8 +64,9 @@ class Draft:
         copy = Draft()
         copy.outcome_model = self.outcome_model
         copy.M = self.M
-        copy.state = np.copy(self.state)
-        copy.move_cnt = np.copy(self.move_cnt)
+        copy.state = [self.state[0][:], self.state[1][:]]
+        copy.avail_moves = set(self.avail_moves)
+        copy.move_cnt = self.move_cnt[:]
         copy.player = self.player
         copy.player_models = self.player_models
         return copy
@@ -69,8 +77,9 @@ class Draft:
         the move for the current player
         """
         # player 0 -> place 1,  player 1 -> place -1
-        val = - self.player * 2 + 1
-        self.state[move] = val
+        # val = - self.player * 2 + 1
+        self.state[self.player].append(move)
+        self.avail_moves.remove(move)
         self.move_cnt[self.player] += 1
         # logger.info('choose move: player {} ({}), move_cnt: {}, move: {}'.format(self.player, self.get_player().name, self.move_cnt[self.player], move))
         self.player ^= 1
@@ -81,10 +90,15 @@ class Draft:
         (i.e., where there are no 1's or -1's)
         """
         if self.end():
-            return []
-        zero_indices = np.argwhere(self.state == 0).tolist()
+            return set([])
+        return set(self.avail_moves)
+        # zero_indices = np.argwhere(self.state == 0).tolist()
+        # zero_indices = []
+        # for i in range(self.M):
+        #     if i not in self.state[0] or i not in self.state[1]:
+        #         zero_indices.append(i)
         # logger.info('get moves: player {} ({}), move_cnt: {}, moves: {}'.format(self.player, self.get_player().name, self.move_cnt[self.player], zero_indices))
-        return zero_indices
+        # return zero_indices
 
     def end(self):
         """
@@ -102,10 +116,10 @@ class Draft:
         # logger.info('---------------------------------------')
         pass
 
-    def print_move(self, match_id, move_duration):
+    def print_move(self, match_id, move_duration, move_id):
         last_player = self.player ^ 1
-        move_str = 'match {} player {} ({}) move_cnt {} duration: {:.3f}' \
-            .format(match_id, last_player, self.player_models[last_player].name,
+        move_str = 'match {} player {} ({}) move_id {}, move_cnt {}, duration: {:.3f}' \
+            .format(match_id, last_player, self.player_models[last_player].name, move_id,
                     self.move_cnt[last_player], move_duration)
         logger.warning(move_str)
         return move_str
@@ -115,14 +129,13 @@ def experiment(match_id, player0_model_str, player1_model_str, env_path):
     t1 = time.time()
     d = Draft(env_path, player0_model_str, player1_model_str)  # instantiate board
 
-    move_str = ''
     while not d.end():
         p = d.get_player()
         t2 = time.time()
         a = p.get_move()
         d.move(a)
         d.print_state()
-        d.print_move(match_id=match_id, move_duration=time.time() - t2) + '\n'
+        d.print_move(match_id=match_id, move_duration=time.time() - t2, move_id=a)
 
     final_red_team_win_rate = d.eval()
     duration = time.time() - t1
@@ -146,8 +159,8 @@ if __name__ == '__main__':
     player0_model_str = 'hero_lineup' if not kwargs else kwargs.player0
     # blue team
     player1_model_str = 'mcts' if not kwargs else kwargs.player1
-    num_matches = 1 if not kwargs else kwargs.num_matches
-    max_iters = 30000 if not kwargs else kwargs.max_iters
+    num_matches = 10 if not kwargs else kwargs.num_matches
+    max_iters = 20000 if not kwargs else kwargs.max_iters
 
     red_team_win_rates, times = [], []
     for i in range(num_matches):

@@ -12,7 +12,7 @@ class Player:
     def get_first_move(self):
         with open('select_dist/dota_select_dist.pickle', 'rb') as f:
             a, p = pickle.load(f)
-            return numpy.random.choice(a, size=1, p=p)
+            return numpy.random.choice(a, size=1, p=p)[0]
 
     def get_move(self):
         raise NotImplementedError
@@ -33,7 +33,7 @@ class RandomPlayer(Player):
             return self.get_first_move()
 
         moves = self.draft.get_moves()
-        return random.choice(moves)
+        return random.sample(moves, 1)[0]
 
 
 class MCTSPlayer(Player):
@@ -43,6 +43,7 @@ class MCTSPlayer(Player):
         self.name ='mcts'
         self.maxiters = maxiters
 
+    # @profile
     def get_move(self):
         """
         decide the next move
@@ -58,16 +59,16 @@ class MCTSPlayer(Player):
             tmp_draft = self.draft.copy()
 
             # selection - select best child if parent fully expanded and not terminal
-            while node.untried_actions == [] and node.children != []:
+            while len(node.untried_actions) == 0 and node.children != []:
                 # logger.info('selection')
                 node = node.select()
                 tmp_draft.move(node.action)
             # logger.info('')
 
             # expansion - expand parent to a random untried action
-            if node.untried_actions != []:
+            if len(node.untried_actions) != 0:
                 # logger.info('expansion')
-                a = random.choice(node.untried_actions)
+                a = random.sample(node.untried_actions, 1)[0]
                 tmp_draft.move(a)
                 node = node.expand(a, tmp_draft.copy())
             # logger.info('')
@@ -76,7 +77,8 @@ class MCTSPlayer(Player):
             # state using random actions
             while not tmp_draft.end():
                 # logger.info('simulation')
-                tmp_draft.move(random.choice(tmp_draft.get_moves()))
+                moves = tmp_draft.get_moves()
+                tmp_draft.move(random.sample(moves, 1)[0])
             # logger.info('')
 
             # backpropagation - propagate result of rollout game up the tree
@@ -146,10 +148,12 @@ class HeroLineUpPlayer(Player):
         # first move, pick champion according to select distribution
         if self.draft.move_cnt[0] == 0 and self.draft.move_cnt[1] == 0:
             return self.get_first_move()
+
         player = self.draft.player
-        allies = frozenset(numpy.argwhere(self.draft.state == (- player * 2 + 1)).flatten().tolist())
+        allies = frozenset(self.draft.get_state(player))
         oppo_player = player ^ 1
-        enemies = frozenset((numpy.argwhere(self.draft.state == (- oppo_player * 2 + 1)) + 1000).flatten().tolist())
+        # enemy id needs to add 1000
+        enemies = frozenset([i+1000 for i in self.draft.get_state(oppo_player)])
 
         R = list()
 
@@ -158,28 +162,32 @@ class HeroLineUpPlayer(Player):
             intercept = allies & key
             assoc = key - intercept
             if len(intercept) > 0 and len(assoc) == 1:
-                win_sup = self.win_rules[key]
-                lose_sup = self.lose_rules.get(key, 0.0)   # lose support may not exist
-                win_rate = win_sup / (win_sup + lose_sup)
-                ally_candidates.append((allies, key, assoc, win_rate))
+                assoc = next(iter(assoc))  # extract the move from the set
+                if assoc in self.draft.get_moves():
+                    win_sup = self.win_rules[key]
+                    lose_sup = self.lose_rules.get(key, 0.0)   # lose support may not exist
+                    win_rate = win_sup / (win_sup + lose_sup)
+                    ally_candidates.append((allies, key, assoc, win_rate))
         # select top 5 win rate association rules
         ally_candidates = sorted(ally_candidates, key=lambda x: x[-1])[-5:]
-        R.extend([next(iter(a[-2])) for a in ally_candidates])
+        R.extend([a[-2] for a in ally_candidates])
 
         enemy_candidates = list()
         for key in self.oppo_2_rules:
             intercept = enemies & key
             assoc = key - intercept
             if len(intercept) == 1 and len(assoc) == 1:
-                confidence = self.oppo_2_rules[key] / self.oppo_1_rules[intercept]
-                enemy_candidates.append((enemies, key, assoc, confidence))
+                assoc = next(iter(assoc))       # extract the move from the set
+                if assoc in self.draft.get_moves():
+                    confidence = self.oppo_2_rules[key] / self.oppo_1_rules[intercept]
+                    enemy_candidates.append((enemies, key, assoc, confidence))
         # select top 5 confidence association rules
         enemy_candidates = sorted(enemy_candidates, key=lambda x: x[-1])[-5:]
-        R.extend([next(iter(e[-2])) for e in enemy_candidates])
+        R.extend([e[-2] for e in enemy_candidates])
 
         if len(R) == 0:
             moves = self.draft.get_moves()
-            return random.choice(moves)
+            return random.sample(moves, 1)[0]
         else:
             move = random.choice(R)
             return move
