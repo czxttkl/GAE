@@ -1,18 +1,21 @@
 Download the following three files into this folder:
 
-[1] dota.pickle: https://www.dropbox.com/s/vy4zei33725l8a4/dota.pickle?dl=0
+a. dota.pickle: https://www.dropbox.com/s/vy4zei33725l8a4/dota.pickle?dl=0
 
-[2] hon.pickle: https://www.dropbox.com/s/cqwemtkc3ih5bog/hon.pickle?dl=0
+b. hon.pickle: https://www.dropbox.com/s/cqwemtkc3ih5bog/hon.pickle?dl=0
 
-[3] hots.pickle: https://www.dropbox.com/s/41fbod0poufrk2o/hots.pickle?dl=0
+c. hots.pickle: https://www.dropbox.com/s/41fbod0poufrk2o/hots.pickle?dl=0
 
-[4] dota2.pickle: https://www.dropbox.com/s/8la6khm6dlqscvx/dota2.pickle?dl=0
+d. dota2.pickle: https://www.dropbox.com/s/8la6khm6dlqscvx/dota2.pickle?dl=0
 
-[5] dota3.pickle: https://www.dropbox.com/s/he9t09gwkrf1lnc/dota3.pickle?dl=0
+e. dota3.pickle: https://www.dropbox.com/s/he9t09gwkrf1lnc/dota3.pickle?dl=0
 
-[6] lol.pickle: https://www.dropbox.com/s/s6qcqxtxf1yf0au/lol.pickle?dl=0
+f. lol.pickle: https://www.dropbox.com/s/s6qcqxtxf1yf0au/lol.pickle?dl=0
+crawled by myself in 2018 March. crawled from match_seed. see data_collect/match_seed.py for how we crawl match seeds
+with player id and champion id in each match. Similar to the dataset used in [6].
 
-crawled by myself in 2018 March. with player id and champion id in each match. Similar to the dataset used in [6].
+g. lol2.pickle:
+similar to f., with only champion id in each match. but crawled from match, not match_seed.
 
 
 Credits to:
