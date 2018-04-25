@@ -13,8 +13,11 @@ hots_output_pickle = '../input/hots.pickle'
 # Heroes of Newerth
 hon_output_pickle = '../input/hon.pickle'
 
-# League of legends
+# League of legends (match seed)
 lol_pickle = '../input/lol.pickle'
+
+# League of legends (match)
+lol2_pickle = '../input/lol2.pickle'
 
 # table for hero information
 dota_full_info_table = '../input/dota_hero_attribute_id_table.csv'

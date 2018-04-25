@@ -34,6 +34,9 @@ def parse_reader(dataset, feature_config, density):
             reader = CVFoldLoLSparseReader(data_path=constants.lol_pickle, folds=10, feature_config=feature_config)
         else:
             raise NotImplementedError
+    elif dataset == 'lol2':
+        if density == 'dense':
+            reader = CVFoldDenseReader(data_path=constants.lol2_pickle, folds=10, feature_config=feature_config)
     elif dataset == 'dota':
         if density == 'dense':
             reader = CVFoldDenseReader(data_path=constants.dota_pickle, folds=10, feature_config=feature_config)
