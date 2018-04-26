@@ -1,5 +1,6 @@
 import random
 from node import Node
+from node_rave import NodeRave
 import logging
 import numpy
 import pickle
@@ -97,8 +98,82 @@ class MCTSPlayer(Player):
                 node = node.parent
             # logger.info('')
 
-        s = sorted(root.children, key=lambda c: c.wins / c.visits)
-        return s[-1].action
+        return root.select_final()
+
+
+class RavePlayer(Player):
+
+    def __init__(self, draft, maxiters):
+        self.draft = draft
+        self.name ='rave'
+        self.maxiters = maxiters
+
+    # @profile
+    def get_move(self):
+        """
+        decide the next move
+        """
+        # first move, pick champion according to select distribution
+        if self.draft.move_cnt[0] == 0 and self.draft.move_cnt[1] == 0:
+            return self.get_first_move()
+
+        root = NodeRave(draft=self.draft)
+
+        for i in range(self.maxiters):
+            node = root
+            tmp_draft = self.draft.copy()
+            # use for AMAF
+            action_taken_p0 = []
+            action_taken_p1 = []
+
+            # selection - select best child if parent fully expanded and not terminal
+            while len(node.untried_actions) == 0 and len(node.children) != 0:
+                # logger.info('selection')
+                node = node.select()
+                tmp_draft.move(node.action)
+            # logger.info('')
+
+            # expansion - expand parent to a random untried action
+            if len(node.untried_actions) != 0:
+                # logger.info('expansion')
+                a = random.sample(node.untried_actions, 1)[0]
+                tmp_draft.move(a)
+                node = node.expand(a, tmp_draft.copy())
+            # logger.info('')
+
+            # simulation - rollout to terminal state from current
+            # state using random actions
+            while not tmp_draft.end():
+                # logger.info('simulation')
+                moves = tmp_draft.get_moves()
+                move = random.sample(moves, 1)[0]
+                tmp_draft.move(move)
+                # tmp_draft.player is already the next player
+                if tmp_draft.player ^ 1 == 0:
+                    action_taken_p0.append(move)
+                else:
+                    action_taken_p1.append(move)
+            # logger.info('')
+
+            # backpropagation - propagate result of rollout game up the tree
+            # reverse the result if player at the node lost the rollout game
+            while node != None:
+                # logger.info('backpropagation')
+                # red team player
+                # node.draft.player is already the next player.
+                # But what we want is the node's associated player
+                if node.draft.player ^ 1 == 0:
+                    result = tmp_draft.eval()
+                # blue team player
+                else:
+                    result = 1 - tmp_draft.eval()
+
+                node.update(result)
+
+                node = node.parent
+            # logger.info('')
+
+        return root.select_final()
 
 
 class HeroLineUpPlayer(Player):

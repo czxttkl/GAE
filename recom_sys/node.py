@@ -24,6 +24,13 @@ class Node:
         s = sorted(self.children, key=lambda c: c.wins / c.visits + 0.2 * sqrt(2 * log(self.visits) / c.visits))
         return s[-1]
 
+    def select_final(self):
+        """
+        select the best move as result, without exploration term.
+        """
+        s = sorted(self.children, key=lambda c: c.wins / c.visits)
+        return s[-1].action
+
     def expand(self, action, board):
         """
         expand parent node (self) by adding child
