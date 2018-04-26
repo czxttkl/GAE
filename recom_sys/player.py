@@ -53,7 +53,7 @@ class MCTSPlayer(Player):
         if self.draft.move_cnt[0] == 0 and self.draft.move_cnt[1] == 0:
             return self.get_first_move()
 
-        root = Node(draft=self.draft)
+        root = Node(player=self.draft.player, untried_actions=self.draft.get_moves())
 
         for i in range(self.maxiters):
             node = root
@@ -71,7 +71,8 @@ class MCTSPlayer(Player):
                 # logger.info('expansion')
                 a = random.sample(node.untried_actions, 1)[0]
                 tmp_draft.move(a)
-                node = node.expand(a, tmp_draft.copy())
+                p = tmp_draft.player
+                node = node.expand(a, p, tmp_draft.get_moves())
             # logger.info('')
 
             # simulation - rollout to terminal state from current
@@ -79,7 +80,8 @@ class MCTSPlayer(Player):
             while not tmp_draft.end():
                 # logger.info('simulation')
                 moves = tmp_draft.get_moves()
-                tmp_draft.move(random.sample(moves, 1)[0])
+                a = random.sample(moves, 1)[0]
+                tmp_draft.move(a)
             # logger.info('')
 
             # backpropagation - propagate result of rollout game up the tree
@@ -87,9 +89,7 @@ class MCTSPlayer(Player):
             while node != None:
                 # logger.info('backpropagation')
                 # red team player
-                # node.draft.player is already the next player.
-                # But what we want is the node's associated player
-                if node.draft.player ^ 1 == 0:
+                if node.player == 0:
                     result = tmp_draft.eval()
                 # blue team player
                 else:
@@ -224,7 +224,7 @@ class HeroLineUpPlayer(Player):
         if self.draft.move_cnt[0] == 0 and self.draft.move_cnt[1] == 0:
             return self.get_first_move()
 
-        player = self.draft.player
+        player = self.draft.next_player
         allies = frozenset(self.draft.get_state(player))
         oppo_player = player ^ 1
         # enemy id needs to add 1000
