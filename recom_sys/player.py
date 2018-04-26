@@ -117,14 +117,13 @@ class RavePlayer(Player):
         if self.draft.move_cnt[0] == 0 and self.draft.move_cnt[1] == 0:
             return self.get_first_move()
 
-        root = NodeRave(draft=self.draft)
+        root = NodeRave(player=self.draft.player, untried_actions=self.draft.get_moves(), c=self.c)
 
         for i in range(self.maxiters):
             node = root
             tmp_draft = self.draft.copy()
             # use for AMAF
-            action_taken_p0 = []
-            action_taken_p1 = []
+            action_taken = [[], []]
 
             # selection - select best child if parent fully expanded and not terminal
             while len(node.untried_actions) == 0 and len(node.children) != 0:
@@ -138,7 +137,8 @@ class RavePlayer(Player):
                 # logger.info('expansion')
                 a = random.sample(node.untried_actions, 1)[0]
                 tmp_draft.move(a)
-                node = node.expand(a, tmp_draft.copy())
+                p = tmp_draft.player
+                node = node.expand(a, p, tmp_draft.get_moves())
             # logger.info('')
 
             # simulation - rollout to terminal state from current
@@ -146,30 +146,22 @@ class RavePlayer(Player):
             while not tmp_draft.end():
                 # logger.info('simulation')
                 moves = tmp_draft.get_moves()
-                move = random.sample(moves, 1)[0]
-                tmp_draft.move(move)
-                # tmp_draft.player is already the next player
-                if tmp_draft.player ^ 1 == 0:
-                    action_taken_p0.append(move)
-                else:
-                    action_taken_p1.append(move)
+                a = random.sample(moves, 1)[0]
+                tmp_draft.move(a)
+                action_taken[tmp_draft.player].append(a)
             # logger.info('')
 
             # backpropagation - propagate result of rollout game up the tree
             # reverse the result if player at the node lost the rollout game
             while node != None:
                 # logger.info('backpropagation')
-                # red team player
-                # node.draft.player is already the next player.
-                # But what we want is the node's associated player
-                if node.draft.player ^ 1 == 0:
+                if node.player == 0:
                     result = tmp_draft.eval()
                 # blue team player
                 else:
                     result = 1 - tmp_draft.eval()
-
-                node.update(result)
-
+                node.update(result, action_taken)
+                action_taken[node.player].append(node.action)
                 node = node.parent
             # logger.info('')
 

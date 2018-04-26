@@ -41,7 +41,7 @@ class Draft:
             return MCTSPlayer(name=player_model_str, draft=self, maxiters=max_iters, c=c)
         elif player_model_str == 'hero_lineup':
             return HeroLineUpPlayer(draft=self)
-        elif p1_model_str.startswith('rave'):
+        elif player_model_str.startswith('rave'):
             max_iters, c = parse_rave_maxiter_c(player_model_str)
             return RavePlayer(name=player_model_str, draft=self, maxiters=max_iters, c=c)
         else:
@@ -173,7 +173,7 @@ if __name__ == '__main__':
 
     # possible player string: random, mcts, hero_lineup
     # red team
-    p0_model_str = 'mcts_10000_1' if not kwargs else kwargs.p0
+    p0_model_str = 'mcts_200_1' if not kwargs else kwargs.p0
     # blue team
     p1_model_str = 'mcts_200_1' if not kwargs else kwargs.p1
     num_matches = 100 if not kwargs else kwargs.num_matches
