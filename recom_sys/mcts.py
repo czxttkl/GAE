@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, '..')
 
+import random
 import os
 import numpy as np
 import time
@@ -162,6 +163,9 @@ def experiment(match_id, p0_model_str, p1_model_str, env_path):
 
 
 if __name__ == '__main__':
+    random.seed(123)
+    np.random.seed(123)
+
     logger = logging.getLogger('mcts')
     logger.addHandler(logging.StreamHandler())
     logger.setLevel(logging.WARNING)
@@ -173,9 +177,9 @@ if __name__ == '__main__':
 
     # possible player string: random, mcts, hero_lineup
     # red team
-    p0_model_str = 'mcts_200_1' if not kwargs else kwargs.p0
+    p0_model_str = 'mcts_50_1' if not kwargs else kwargs.p0
     # blue team
-    p1_model_str = 'mcts_200_1' if not kwargs else kwargs.p1
+    p1_model_str = 'rave_50_1' if not kwargs else kwargs.p1
     num_matches = 100 if not kwargs else kwargs.num_matches
 
     red_team_win_rates, times = [], []
