@@ -39,10 +39,11 @@ class RandomPlayer(Player):
 
 class MCTSPlayer(Player):
 
-    def __init__(self, draft, maxiters):
+    def __init__(self, name, draft, maxiters, c):
         self.draft = draft
-        self.name ='mcts'
+        self.name =name
         self.maxiters = maxiters
+        self.c = c
 
     # @profile
     def get_move(self):
@@ -53,7 +54,7 @@ class MCTSPlayer(Player):
         if self.draft.move_cnt[0] == 0 and self.draft.move_cnt[1] == 0:
             return self.get_first_move()
 
-        root = Node(player=self.draft.player, untried_actions=self.draft.get_moves())
+        root = Node(player=self.draft.player, untried_actions=self.draft.get_moves(), c=self.c)
 
         for i in range(self.maxiters):
             node = root
@@ -88,10 +89,8 @@ class MCTSPlayer(Player):
             # reverse the result if player at the node lost the rollout game
             while node != None:
                 # logger.info('backpropagation')
-                # red team player
                 if node.player == 0:
                     result = tmp_draft.eval()
-                # blue team player
                 else:
                     result = 1 - tmp_draft.eval()
                 node.update(result)
@@ -103,10 +102,11 @@ class MCTSPlayer(Player):
 
 class RavePlayer(Player):
 
-    def __init__(self, draft, maxiters):
+    def __init__(self, name, draft, maxiters, c):
         self.draft = draft
-        self.name ='rave'
+        self.name =name
         self.maxiters = maxiters
+        self.c = c
 
     # @profile
     def get_move(self):

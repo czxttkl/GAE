@@ -7,7 +7,7 @@ class Node:
     the monte carlo search tree
     """
 
-    def __init__(self, parent=None, action=None, player=None, untried_actions=None):
+    def __init__(self, parent=None, action=None, player=None, untried_actions=None, c=None):
         self.parent = parent
         self.children = []
         self.wins = 0
@@ -15,13 +15,14 @@ class Node:
         self.untried_actions = untried_actions
         self.action = action
         self.player = player
+        self.c = c
 
     def select(self):
         """
         select child of node with
         highest UCB1 value
         """
-        s = sorted(self.children, key=lambda c: c.wins / c.visits + 0.2 * sqrt(2 * log(self.visits) / c.visits))
+        s = sorted(self.children, key=lambda c: c.wins / c.visits + 0.2 * self.c * sqrt(log(self.visits) / c.visits))
         return s[-1]
 
     def select_final(self):
@@ -36,7 +37,7 @@ class Node:
         expand parent node (self) by adding child
         node with given action and state
         """
-        child = Node(parent=self, action=action, player=player, untried_actions=untried_actions)
+        child = Node(parent=self, action=action, player=player, untried_actions=untried_actions, c=self.c)
         self.untried_actions.remove(action)
         self.children.append(child)
         return child

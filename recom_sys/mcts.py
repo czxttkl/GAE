@@ -7,7 +7,7 @@ import time
 import pickle
 import logging
 from player import RandomPlayer, MCTSPlayer, HeroLineUpPlayer, RavePlayer
-from utils.parser import parse_mcts_parameters
+from utils.parser import parse_mcts_exp_parameters, parse_mcts_maxiter_c, parse_rave_maxiter_c
 
 
 class Draft:
@@ -15,8 +15,8 @@ class Draft:
     class handling state of the draft
     """
 
-    def __init__(self, env_path=None, player0_model_str=None, player1_model_str=None):
-        if env_path and player0_model_str and player1_model_str:
+    def __init__(self, env_path=None, p0_model_str=None, p1_model_str=None):
+        if env_path and p0_model_str and p1_model_str:
             self.outcome_model, self.M = self.load(env_path)
             self.state = [[], []]
             self.avail_moves = set(range(self.M))
@@ -24,8 +24,8 @@ class Draft:
             self.player = None  # current player's turn
             self.next_player = 0  # next player turn
             # player 0 will pick first and be red team; player 1 will pick next and be blue team
-            self.player_models = [self.construct_player_model(player0_model_str),
-                                  self.construct_player_model(player1_model_str)]
+            self.player_models = [self.construct_player_model(p0_model_str),
+                                  self.construct_player_model(p1_model_str)]
 
     def get_state(self, player):
         return self.state[player]
@@ -36,12 +36,14 @@ class Draft:
     def construct_player_model(self, player_model_str):
         if player_model_str == 'random':
             return RandomPlayer(draft=self)
-        elif player_model_str == 'mcts':
-            return MCTSPlayer(draft=self, maxiters=max_iters)
+        elif player_model_str.startswith('mcts'):
+            max_iters, c = parse_mcts_maxiter_c(player_model_str)
+            return MCTSPlayer(name=player_model_str, draft=self, maxiters=max_iters, c=c)
         elif player_model_str == 'hero_lineup':
             return HeroLineUpPlayer(draft=self)
-        elif player1_model_str == 'rave':
-            return RavePlayer(draft=self, maxiters=max_iters)
+        elif p1_model_str.startswith('rave'):
+            max_iters, c = parse_rave_maxiter_c(player_model_str)
+            return RavePlayer(name=player_model_str, draft=self, maxiters=max_iters, c=c)
         else:
             raise NotImplementedError
 
@@ -139,9 +141,9 @@ class Draft:
         return move_str
 
 
-def experiment(match_id, player0_model_str, player1_model_str, env_path):
+def experiment(match_id, p0_model_str, p1_model_str, env_path):
     t1 = time.time()
-    d = Draft(env_path, player0_model_str, player1_model_str)  # instantiate board
+    d = Draft(env_path, p0_model_str, p1_model_str)  # instantiate board
 
     while not d.end():
         p = d.get_player()
@@ -164,21 +166,21 @@ if __name__ == '__main__':
     logger.addHandler(logging.StreamHandler())
     logger.setLevel(logging.WARNING)
 
-    kwargs = parse_mcts_parameters()
+    kwargs = parse_mcts_exp_parameters()
 
     # outcome predictor load path
     env_path = 'NN_hiddenunit120_dota.pickle' if not kwargs else kwargs.env_path
+
     # possible player string: random, mcts, hero_lineup
     # red team
-    player0_model_str = 'mcts' if not kwargs else kwargs.player0
+    p0_model_str = 'mcts_10000_1' if not kwargs else kwargs.p0
     # blue team
-    player1_model_str = 'hero_lineup' if not kwargs else kwargs.player1
+    p1_model_str = 'mcts_200_1' if not kwargs else kwargs.p1
     num_matches = 100 if not kwargs else kwargs.num_matches
-    max_iters = 60 if not kwargs else kwargs.max_iters
 
     red_team_win_rates, times = [], []
     for i in range(num_matches):
-        wr, t, s = experiment(i, player0_model_str, player1_model_str, env_path)
+        wr, t, s = experiment(i, p0_model_str, p1_model_str, env_path)
         red_team_win_rates.append(wr)
         times.append(t)
         s += ', mean WR: {:.5f}\n'.format(np.average(red_team_win_rates))
@@ -188,15 +190,15 @@ if __name__ == '__main__':
     test_result_path = 'mcts_result.csv'
     if not os.path.exists(test_result_path):
         with open(test_result_path, 'w') as f:
-            line = "num_matches, time, player0, player1, red_team_win_rate, std, mcts_max_iters\n"
+            line = "num_matches, time, player0, player1, red_team_win_rate, std\n"
             f.write(line)
     # write data
     with open(test_result_path, 'a') as f:
-        line = "{}, {:.5f}, {}, {}, {:.5f}, {:.5f}, {}\n". \
-            format(num_matches, np.average(times), player0_model_str, player1_model_str,
-                   np.average(red_team_win_rates), np.std(red_team_win_rates), max_iters)
+        line = "{}, {:.5f}, {}, {}, {:.5f}, {:.5f}\n". \
+            format(num_matches, np.average(times), p0_model_str, p1_model_str,
+                   np.average(red_team_win_rates), np.std(red_team_win_rates))
         f.write(line)
 
-    logger.warning('{} matches, {} vs. {}. average time {:.5f}, average red team win rate {:.5f}, std {:.5f}, max_iters {}'
-                   .format(num_matches, player0_model_str, player1_model_str,
-                           np.average(times), np.average(red_team_win_rates), np.std(red_team_win_rates), max_iters))
+    logger.warning('{} matches, {} vs. {}. average time {:.5f}, average red team win rate {:.5f}, std {:.5f}'
+                   .format(num_matches, p0_model_str, p1_model_str,
+                           np.average(times), np.average(red_team_win_rates), np.std(red_team_win_rates)))
