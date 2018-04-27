@@ -1,0 +1,1 @@
+python3.6 mcts.py --env_path=NN_hiddenunit120_dota.pickle --num_matches=100 --player0=hero_lineup --player1=random --max_iters=30000
