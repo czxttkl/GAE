@@ -3,6 +3,9 @@ data_src, model, feature, duration, train_acc, train_auc, test_acc, test_auc
      dota, GBDT_max_depth6_l2_reg20_eta0.1_rounds12, one_way_two_teams,15.7,0.59708,0.63015,0.59689,0.62954
      dota, GBDT_max_depth3_l2_reg20_eta0.1_rounds200, one_way_two_teams,106.2,0.62885,0.67599,0.62855,0.67534
      dota, GBDT_max_depth6_l2_reg20_eta0.1_rounds200, one_way_two_teams,193.2,0.64276,0.69434,0.63998,0.69034
+,,,,,,,
+     dota,        MajorityClass, one_way_one_team_dense, 0.00, 0.53747, 0.50000, 0.53779, 0.50000
+,,,,,,,
      dota, NN_hiddenunit1000, one_way_one_team_sparse,21645,0.68941,0.75571,0.63873,0.68798
      dota,      NN_hiddenunit80, one_way_one_team_dense, 516.00, 0.65288, 0.70762, 0.64812, 0.70106
      dota, NN_hiddenunit100, one_way_one_team_dense,579.9,0.65464,0.71014,0.64898,0.70222
