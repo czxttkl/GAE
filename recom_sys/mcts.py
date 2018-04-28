@@ -40,7 +40,7 @@ class Draft:
         elif player_model_str.startswith('mcts'):
             max_iters, c = parse_mcts_maxiter_c(player_model_str)
             return MCTSPlayer(name=player_model_str, draft=self, maxiters=max_iters, c=c)
-        elif player_model_str == 'hero_lineup':
+        elif player_model_str == 'assocrule':
             return HeroLineUpPlayer(draft=self)
         elif player_model_str.startswith('rave'):
             max_iters, c = parse_rave_maxiter_c(player_model_str)
@@ -175,11 +175,11 @@ if __name__ == '__main__':
     # outcome predictor load path
     env_path = 'NN_hiddenunit120_dota.pickle' if not kwargs else kwargs.env_path
 
-    # possible player string: random, mcts, hero_lineup
+    # possible player string: random, mcts_maxiter_c, assocrule, rave_maxiter_c
     # red team
-    p0_model_str = 'mcts_50_1' if not kwargs else kwargs.p0
+    p0_model_str = 'random' if not kwargs else kwargs.p0
     # blue team
-    p1_model_str = 'rave_50_1' if not kwargs else kwargs.p1
+    p1_model_str = 'assocrule' if not kwargs else kwargs.p1
     num_matches = 100 if not kwargs else kwargs.num_matches
 
     red_team_win_rates, times = [], []
