@@ -7,7 +7,7 @@ import numpy as np
 import time
 import pickle
 import logging
-from player import RandomPlayer, MCTSPlayer, HeroLineUpPlayer, RavePlayer
+from player import RandomPlayer, MCTSPlayer, HeroLineUpPlayer, RavePlayer, HighestWinRatePlayer
 from utils.parser import parse_mcts_exp_parameters, parse_mcts_maxiter_c, parse_rave_maxiter_c
 
 
@@ -42,6 +42,8 @@ class Draft:
             return MCTSPlayer(name=player_model_str, draft=self, maxiters=max_iters, c=c)
         elif player_model_str == 'assocrule':
             return HeroLineUpPlayer(draft=self)
+        elif player_model_str == 'hwr':
+            return HighestWinRatePlayer(draft=self)
         elif player_model_str.startswith('rave'):
             max_iters, c = parse_rave_maxiter_c(player_model_str)
             return RavePlayer(name=player_model_str, draft=self, maxiters=max_iters, c=c)
@@ -175,11 +177,11 @@ if __name__ == '__main__':
     # outcome predictor load path
     env_path = 'NN_hiddenunit120_dota.pickle' if not kwargs else kwargs.env_path
 
-    # possible player string: random, mcts_maxiter_c, assocrule, rave_maxiter_c
+    # possible player string: random, hwr, mcts_maxiter_c, assocrule, rave_maxiter_c
     # red team
-    p0_model_str = 'mcts_100_0.25' if not kwargs else kwargs.p0
+    p0_model_str = 'hwr' if not kwargs else kwargs.p0
     # blue team
-    p1_model_str = 'mcts_100_0' if not kwargs else kwargs.p1
+    p1_model_str = 'mcts_1600_0.5' if not kwargs else kwargs.p1
     num_matches = 100 if not kwargs else kwargs.num_matches
 
     red_team_win_rates, times = [], []

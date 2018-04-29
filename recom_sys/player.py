@@ -37,6 +37,28 @@ class RandomPlayer(Player):
         return random.sample(moves, 1)[0]
 
 
+class HighestWinRatePlayer(Player):
+
+    def __init__(self, draft):
+        self.draft = draft
+        self.name = 'hwr'
+        with open('win_rate_dist/dota_win_rate_dist.pickle', 'rb') as f:
+            self.win_rate_dist = pickle.load(f)
+
+    def get_move(self):
+        """
+        decide the next move
+        """
+        # first move, pick champion according to select distribution
+        if self.draft.move_cnt[0] == 0 and self.draft.move_cnt[1] == 0:
+            return self.get_first_move()
+
+        moves = self.draft.get_moves()
+        move_win_rates = [(m, self.win_rate_dist[m]) for m in moves]
+        best_move, best_win_rate = sorted(move_win_rates, key=lambda x: x[1])[-1]
+        return best_move
+
+
 class MCTSPlayer(Player):
 
     def __init__(self, name, draft, maxiters, c):
@@ -172,7 +194,7 @@ class HeroLineUpPlayer(Player):
 
     def __init__(self, draft):
         self.draft = draft
-        self.name = 'hero_lineup'
+        self.name = 'assocrule'
         self.load_rules(match_num=3056596,
                         oppo_team_spmf_path='apriori/dota_oppo_team_output.txt',
                         win_team_spmf_path='apriori/dota_win_team_output.txt',
