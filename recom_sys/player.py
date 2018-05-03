@@ -124,11 +124,12 @@ class MCTSPlayer(Player):
 
 class RavePlayer(Player):
 
-    def __init__(self, name, draft, maxiters, c):
+    def __init__(self, name, draft, maxiters, c, k):
         self.draft = draft
         self.name =name
         self.maxiters = maxiters
         self.c = c
+        self.k = k
 
     # @profile
     def get_move(self):
@@ -139,7 +140,7 @@ class RavePlayer(Player):
         if self.draft.move_cnt[0] == 0 and self.draft.move_cnt[1] == 0:
             return self.get_first_move()
 
-        root = NodeRave(player=self.draft.player, untried_actions=self.draft.get_moves(), c=self.c)
+        root = NodeRave(player=self.draft.player, untried_actions=self.draft.get_moves(), c=self.c, k=self.k)
 
         for i in range(self.maxiters):
             node = root

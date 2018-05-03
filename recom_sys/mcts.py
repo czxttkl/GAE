@@ -8,7 +8,7 @@ import time
 import pickle
 import logging
 from player import RandomPlayer, MCTSPlayer, HeroLineUpPlayer, RavePlayer, HighestWinRatePlayer
-from utils.parser import parse_mcts_exp_parameters, parse_mcts_maxiter_c, parse_rave_maxiter_c
+from utils.parser import parse_mcts_exp_parameters, parse_mcts_maxiter_c, parse_rave_maxiter_c_k
 
 
 class Draft:
@@ -45,8 +45,8 @@ class Draft:
         elif player_model_str == 'hwr':
             return HighestWinRatePlayer(draft=self)
         elif player_model_str.startswith('rave'):
-            max_iters, c = parse_rave_maxiter_c(player_model_str)
-            return RavePlayer(name=player_model_str, draft=self, maxiters=max_iters, c=c)
+            max_iters, c, k = parse_rave_maxiter_c_k(player_model_str)
+            return RavePlayer(name=player_model_str, draft=self, maxiters=max_iters, c=c, k=k)
         else:
             raise NotImplementedError
 
@@ -179,7 +179,7 @@ if __name__ == '__main__':
 
     # possible player string: random, hwr, mcts_maxiter_c, assocrule, rave_maxiter_c
     # red team
-    p0_model_str = 'hwr' if not kwargs else kwargs.p0
+    p0_model_str = 'rave_400_0.25_10' if not kwargs else kwargs.p0
     # blue team
     p1_model_str = 'mcts_1600_0.5' if not kwargs else kwargs.p1
     num_matches = 100 if not kwargs else kwargs.num_matches

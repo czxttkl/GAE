@@ -84,8 +84,8 @@ def parse_mcts_maxiter_c(player_str):
     return int(maxiter), float(c)
 
 
-def parse_rave_maxiter_c(player_str):
+def parse_rave_maxiter_c_k(player_str):
     assert player_str.startswith('rave')
-    _, maxiter, c = player_str.split('_')
-    return int(maxiter), float(c)
+    _, maxiter, c, k = player_str.split('_')
+    return int(maxiter), float(c), float(k)
 

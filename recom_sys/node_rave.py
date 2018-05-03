@@ -7,7 +7,7 @@ class NodeRave:
     the monte carlo search tree
     """
 
-    def __init__(self, parent=None, action=None, player=None, untried_actions=None, c=None):
+    def __init__(self, parent=None, action=None, player=None, untried_actions=None, c=None, k=None):
         self.parent = parent
         self.children = {}
         self.wins = 0
@@ -18,6 +18,7 @@ class NodeRave:
         self.action = action
         self.player = player
         self.c = c
+        self.k = k
 
     def select(self):
         """
@@ -32,8 +33,7 @@ class NodeRave:
                 qsa_tilde = 0
             else:
                 qsa_tilde = c.wins_amaf / c.visits_amaf
-            k = 20.
-            bsa = sqrt(k / (self.visits + k))
+            bsa = sqrt(self.k / (self.visits + self.k))
             qsa_star = (1 - bsa) * qsa + bsa * qsa_tilde
             qsa_star_add = qsa_star + 0.2 * self.c * sqrt(log(self.visits) / c.visits)
             if qsa_star_add > best_qsa_star_add:
@@ -53,8 +53,7 @@ class NodeRave:
                 qsa_tilde = 0
             else:
                 qsa_tilde = c.wins_amaf / c.visits_amaf
-            k = 20.
-            bsa = sqrt(k / (self.visits + k))
+            bsa = sqrt(self.k / (self.visits + self.k))
             qsa_star = (1 - bsa) * qsa + bsa * qsa_tilde
             if qsa_star > best_qsa_star:
                 best_qsa_star = qsa_star
@@ -66,7 +65,7 @@ class NodeRave:
         expand parent node (self) by adding child
         node with given action and state
         """
-        child = NodeRave(parent=self, action=action, player=player, untried_actions=untried_actions, c=self.c)
+        child = NodeRave(parent=self, action=action, player=player, untried_actions=untried_actions, c=self.c, k=self.k)
         self.untried_actions.remove(action)
         self.children[child.action] = child
         return child
