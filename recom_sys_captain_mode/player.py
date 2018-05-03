@@ -1,6 +1,5 @@
 import random
 from node import Node
-from node_rave import NodeRave
 import logging
 import numpy
 import pickle
@@ -13,8 +12,7 @@ class Player:
     def get_first_move(self):
         with open('select_dist/dota_select_dist.pickle', 'rb') as f:
             a, p = pickle.load(f)
-            # return numpy.random.choice(a, size=1, p=p)[0]
-            return 39
+            return numpy.random.choice(a, size=1, p=p)[0]
 
     def get_move(self, move_type):
         raise NotImplementedError

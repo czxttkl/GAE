@@ -48,7 +48,7 @@ if __name__ == '__main__':
     # red team
     p0_model_str = 'hwr' if not kwargs else kwargs.p0
     # blue team
-    p1_model_str = 'mcts_4000_0.5' if not kwargs else kwargs.p1
+    p1_model_str = 'mcts_50000_0.5' if not kwargs else kwargs.p1
     num_matches = 30 if not kwargs else kwargs.num_matches
 
     red_team_win_rates, times = [], []

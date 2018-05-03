@@ -140,7 +140,7 @@ class Draft:
         return False
 
     def print_move(self, match_id, move_duration, move_id, move_type):
-        move_str = 'match {} player {} ({}), {}_id {}, move_cnt {}, duration: {:.3f}' \
+        move_str = 'match {} player {} ({:15s}), {:4s}: {:3d}, move_cnt: {}, duration: {:.3f}' \
             .format(match_id, self.player, self.player_models[self.player].name, move_type, move_id,
                     self.move_cnt[self.player], move_duration)
         logger = logging.getLogger('mcts')
