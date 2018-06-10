@@ -58,6 +58,13 @@ class MyPyMongo:
         else:
             return False
 
+    def exist_match_id_in_player_seed_match_history(self, match_id: int):
+        match_id = int(match_id)
+        if self.db.player_seed_match_history.find({'gameId': match_id}).count() > 0:
+            return True
+        else:
+            return False
+
     def insert_player_seed_match_history(self, match_history_dict: dict):
         try:
             self.db.player_seed_match_history.insert_one(match_history_dict)
