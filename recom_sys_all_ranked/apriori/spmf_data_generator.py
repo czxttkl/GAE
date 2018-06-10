@@ -1,5 +1,5 @@
 """
-generate csv files used by SPMF
+generate txt files used by SPMF
 """
 import pickle
 import numpy
