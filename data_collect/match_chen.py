@@ -55,7 +55,7 @@ def collect_match():
         player['player_in_match'] = True
         mypymongo.db.player_seed.find_one_and_replace({'accountId': account_id}, player)
         print("finish crawling player", account_id)
-        time.sleep(2)
+        # time.sleep(2)
 
 
 if __name__ == '__main__':
