@@ -8,6 +8,9 @@ field `player_in_match_history`.
 is fully populated.
 5. use `match_seed_participant_match_crawled.py` to determine whether a match seed's participants' match history has
 been crawled, indicated by the field `all_participants_matches_crawled`
-6. we want to complete all players' match history in version 8.6 or lower. So we first remove  `player_in_match_history` and `player_in_match` fields in player_seed db
+6. we want to complete all players' match history in version 8.6 or lower. 
+So we first remove  `player_in_match_history` and `player_in_match` fields in player_seed db, and remove `all_participants_matches_crawled` in match_seed db.
 7. then, we use `player_seed_match_history_completion.py` to complete match history
 8. then, we use `match.py` again to populate match data
+9. finally, we use `match_seed_participant_match_crawled.py` again to determine whether a match seed's participants' match history has
+been crawled 
