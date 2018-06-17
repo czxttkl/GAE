@@ -29,17 +29,16 @@ def collect_player_seed_match_history():
 
         account_id = player['accountId']
         summoner = Summoner(account=account_id, region='NA')
-        # A MatchHistory is a lazy list, meaning it's elements only get loaded as-needed.
-        match_history = summoner.match_history
         # collect data since 2018 season
         # match seed last match is on 1522602430
         # db.getCollection("match_seed").find({}).sort({gameCreation: -1}).limit(1)
-        match_history(seasons={Season.season_8}, end_time=arrow.get(1522602430))
+        match_history = MatchHistory(summoner=summoner, seasons={Season.season_8})
 
         i = 0
         for i, match in enumerate(match_history):
             match_dict = match.to_dict()
-            # if a match already exists, that means we already collected the rest of his matches
+            if match_dict['creation'].timestamp > 1522602430:
+                continue
             if mypymongo.exist_match_id_in_player_seed_match_history(match_dict['id']):
                 continue
             # season before SEASON 2018 will be skipped

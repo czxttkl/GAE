@@ -1,5 +1,5 @@
 """
-Use this file to generate input/lol.pickle
+Use this file to generate input/lol2.pickle
 """
 import numpy
 import pickle
