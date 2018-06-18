@@ -11,7 +11,6 @@ from cassiopeia.data import Season
 
 from data_collect.mypymongo import MyPyMongo
 import pymongo
-import arrow
 
 
 def collect_player_seed_match_history():
@@ -39,7 +38,7 @@ def collect_player_seed_match_history():
             match_dict = match.to_dict()
             if match_dict['creation'].timestamp > 1522602430:
                 continue
-            if mypymongo.exist_match_id_in_player_seed_match_history(match_dict['id']):
+            if mypymongo.exist_match_id_acct_id_in_player_seed_match_history(match_id=match_dict['id'], account_id=account_id):
                 continue
             # season before SEASON 2018 will be skipped
             if match_dict['season'] < 11:
