@@ -10,6 +10,7 @@ is fully populated.
 been crawled, indicated by the field `all_participants_matches_crawled`
 
 Later, we find it is better to complete all players' match history in version 8.6 or lower. So:
+
 6. we first remove  `player_in_match_history` and `player_in_match` fields in `player_seed` db, and remove `all_participants_matches_crawled` in `match_seed` db.
 7. then, we use `player_seed_match_history_completion.py` to complete match history
 8. then, we use `match.py` again to populate match data
