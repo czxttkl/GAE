@@ -7,6 +7,7 @@ sys.path.insert(0, '..')
 import numpy
 from baseline import Baseline
 from data_mangle.cv_fold_dense_reader import CVFoldDenseReader
+from data_mangle.cv_fold_lol_sparse_reader import CVFoldLoLSparseReader
 from data_mangle.report_writer import ReportWriter
 from utils import constants
 import xgboost as xgb
@@ -48,10 +49,20 @@ class BaselineXgboost(Baseline):
 
 
 if __name__ == "__main__":
-    baseline = BaselineXgboost(models=[MyXgboost(nthread=50, nrounds=12, max_depth=3, l2_reg=20, eta=0.1),
-                                       MyXgboost(nthread=50, nrounds=12, max_depth=6, l2_reg=20, eta=0.1),
+    baseline = BaselineXgboost(models=[
+                                       MyXgboost(nthread=28, nrounds=25, max_depth=3, l2_reg=1, eta=0.3),
+                                       MyXgboost(nthread=28, nrounds=25, max_depth=6, l2_reg=1, eta=0.3),
+                                       MyXgboost(nthread=28, nrounds=25, max_depth=9, l2_reg=1, eta=0.3),
+                                       MyXgboost(nthread=28, nrounds=50, max_depth=3, l2_reg=1, eta=0.3),
+                                       MyXgboost(nthread=28, nrounds=50, max_depth=6, l2_reg=1, eta=0.3),
+                                       MyXgboost(nthread=28, nrounds=50, max_depth=9, l2_reg=1, eta=0.3),
+                                       MyXgboost(nthread=28, nrounds=100, max_depth=3, l2_reg=1, eta=0.3),
+                                       MyXgboost(nthread=28, nrounds=100, max_depth=6, l2_reg=1, eta=0.3),
+                                       MyXgboost(nthread=28, nrounds=100, max_depth=9, l2_reg=1, eta=0.3),
                                        # add more grid search models here ...
                                        ],
-                               reader=CVFoldDenseReader(data_path=constants.dota_pickle, folds=10),
+                               reader=CVFoldLoLSparseReader(data_path=constants.lol_pickle, folds=1, seed=715,
+                                                            feature_config='champion_summoner_one_team'),
+                               # reader=CVFoldDenseReader(data_path=constants.dota_pickle, folds=1, seed=715),
                                writer=ReportWriter('result.csv'))
     baseline.cross_valid()
