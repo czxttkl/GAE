@@ -17,6 +17,8 @@ class CVFoldLoLSparseReader(object):
         self.data_src = data_path.split('/')[-1].split('.')[0]
         self.feature_config = feature_config
         self.read_data_from_file(data_path, folds, seed)
+        # used to record train/test/validation match id in each fold
+        self.match_id_record = {}
 
     def read_data_from_file(self, data_path, folds, seed):
         """
@@ -38,14 +40,16 @@ class CVFoldLoLSparseReader(object):
             self.M_o, self.M_r_C, self.M_b_C, self.M_r_P, self.M_b_P, \
             self.match_id2idx_dict, self.summoner_id2idx_dict, self.champion_id2idx_dict, self.Z, self.N, self.M = \
                 pickle.load(f)
+            self.match_idx2id_dict = {v: k for k, v in self.match_id2idx_dict.items()}
 
         print("CVFoldReader. Z: {}, N: {}, M: {}".format(self.Z, self.N, self.M))
 
         self.data_path = data_path
         self.folds = folds
 
-        # use 90% as train data and 10% test data
-        ss = ShuffleSplit(n_splits=folds, test_size=0.1, train_size=0.9, random_state=seed)
+        # use 90% as train data and 10% test data if validation=False
+        # use 80% as train data, 10% validation data and 10% test data if validation=True
+        ss = ShuffleSplit(n_splits=folds, test_size=0.2, train_size=0.8, random_state=seed)
         self.train_split_idx = {}
         self.test_split_idx = {}
 
@@ -59,6 +63,8 @@ class CVFoldLoLSparseReader(object):
         Read i-th fold of splitted train/test data
         """
         train_idx, test_idx = self.train_split_idx[i], self.test_split_idx[i]
+        train_idx, test_idx = \
+            numpy.concatenate((train_idx, test_idx[:len(test_idx) // 2])), test_idx[(len(test_idx) // 2):]
 
         M_o_train = self.M_o[train_idx]
         M_r_C_train = self.M_r_C[train_idx]
@@ -75,6 +81,32 @@ class CVFoldLoLSparseReader(object):
         test_feature = self.to_feature_matrix(M_r_C_test, M_b_C_test, M_r_P_test, M_b_P_test)
 
         return train_feature, M_o_train, test_feature, M_o_test
+
+    def read_train_test_valid_fold(self, i):
+        train_idx, test_idx = self.train_split_idx[i], self.test_split_idx[i]
+        valid_idx, test_idx = test_idx[:(len(test_idx) // 2)], test_idx[(len(test_idx) // 2):]
+
+        M_o_train = self.M_o[train_idx]
+        M_r_C_train = self.M_r_C[train_idx]
+        M_b_C_train = self.M_b_C[train_idx]
+        M_r_P_train = self.M_r_P[train_idx]
+        M_b_P_train = self.M_b_P[train_idx]
+        M_o_test = self.M_o[test_idx]
+        M_r_C_test = self.M_r_C[test_idx]
+        M_b_C_test = self.M_b_C[test_idx]
+        M_r_P_test = self.M_r_P[test_idx]
+        M_b_P_test = self.M_b_P[test_idx]
+        M_o_valid = self.M_o[valid_idx]
+        M_r_C_valid = self.M_r_C[valid_idx]
+        M_b_C_valid = self.M_b_C[valid_idx]
+        M_r_P_valid = self.M_r_P[valid_idx]
+        M_b_P_valid = self.M_b_P[valid_idx]
+
+        train_feature = self.to_feature_matrix(M_r_C_train, M_b_C_train, M_r_P_train, M_b_P_train)
+        test_feature = self.to_feature_matrix(M_r_C_test, M_b_C_test, M_r_P_test, M_b_P_test)
+        valid_feature = self.to_feature_matrix(M_r_C_valid, M_b_C_valid, M_r_P_valid, M_b_P_valid)
+
+        return train_feature, M_o_train, test_feature, M_o_test, valid_feature, M_o_valid
 
     def to_feature_matrix(self, M_r_C, M_b_C, M_r_P, M_b_P):
         assert M_r_C.shape[0] == M_b_C.shape[0] == M_r_P.shape[0] == M_b_P.shape[0]

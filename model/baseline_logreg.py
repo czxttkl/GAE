@@ -41,4 +41,4 @@ if __name__ == "__main__":
             # reader=CVFoldDenseReader(data_path=constants.dota_pickle, folds=1, seed=715,
             #                          feature_config='one_way_one_team'),
             writer=ReportWriter('result.csv'))
-    baseline.cross_valid()
+    baseline.cross_valid(show_progress=True, validation=False)
