@@ -23,13 +23,14 @@ def get_data():
     # M_r_P[z, 0-4] match z, red team, player idx
     # M_b_P[z, 0-4] match z, blue team, player idx
     M_o, M_r_C, M_b_C, M_r_P, M_b_P = [], [], [], [], []
+    match_ids = []
 
     for cnt, match in enumerate(mypymongo.db.match_seed.find({}, no_cursor_timeout=True)):
         if cnt % 100 == 0:
             print("process {} match".format(cnt))
 
         match_id = match['id']
-        update_dict(match_id2idx_dict, match_id)
+        match_ids.append(match_id)
 
         for team in match['teams']:
             if team['side'] == 'red':
@@ -80,6 +81,10 @@ def get_data():
     M_b_C = M_b_C[shuffle_idx]
     M_r_P = M_r_P[shuffle_idx]
     M_b_P = M_b_P[shuffle_idx]
+    match_ids = numpy.array(match_ids)
+    match_ids = match_ids[shuffle_idx]
+    for match_id in match_ids:
+        update_dict(match_id2idx_dict, match_id)
 
     return M_o, M_r_C, M_b_C, M_r_P, M_b_P, \
         match_id2idx_dict, summoner_id2idx_dict, champion_id2idx_dict, Z, N, M
@@ -90,7 +95,6 @@ if __name__ == "__main__":
 
     mypymongo = MyPyMongo()
 
-    # NOTE, match_id2idx_dict is not correct after shuffling!!!
     M_o, M_r_C, M_b_C, M_r_P, M_b_P, \
         match_id2idx_dict, summoner_id2idx_dict, champion_id2idx_dict, \
         Z, N, M = get_data()
