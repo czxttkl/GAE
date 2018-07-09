@@ -22,17 +22,19 @@ if __name__ == "__main__":
 
     dataset = 'dota' if not kwargs else kwargs.dataset
     density = 'dense' if not kwargs else kwargs.density
+    fold = 3 if not kwargs else kwargs.fold
+    seed = 718 if not kwargs else kwargs.seed
 
     feature_config = 'one_way_one_team' if not kwargs else kwargs.nn_featconfig
     nn_hidden = 100 if not kwargs else kwargs.nn_hidden
 
     print('use parameter: dataset {}, feature_config: {}, density: {}, nn_hidden: {}'
           .format(dataset, feature_config, density, nn_hidden))
-    reader = parse_reader(dataset, feature_config, density)
+    reader = parse_reader(dataset, feature_config, density, fold, seed)
 
     baseline = \
         BaselineNN(
-            models=[MLPClassifier(hidden_layer_sizes=(nn_hidden,),),
+            models=[MLPClassifier(hidden_layer_sizes=(nn_hidden,), verbose=True),
                     # add more grid search models here ...
                     ],
             # reader=CVFoldLoLSparseReader(data_path=constants.lol_pickle, folds=10,
@@ -41,6 +43,6 @@ if __name__ == "__main__":
             #                           feature_config='one_way_one_team'),
             reader=reader,
             writer=ReportWriter('result.csv'))
-    baseline.cross_valid()
+    baseline.cross_valid(validation=True)
 
     # baseline.save_model()

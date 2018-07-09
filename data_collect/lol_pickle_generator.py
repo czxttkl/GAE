@@ -62,7 +62,7 @@ def get_data():
         M_b_C.append(blue_team_champion_ids)
         M_b_P.append(blue_team_summoner_ids)
 
-    Z = len(match_id2idx_dict)
+    Z = mypymongo.db.match_seed.count()
     N = len(summoner_id2idx_dict)
     M = len(champion_id2idx_dict)
     assert cnt == Z - 1

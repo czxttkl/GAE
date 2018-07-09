@@ -24,38 +24,48 @@ def parse_ml_parameters():
     # general
     parser.add_option("--density", dest='density', type='string', default='')
     parser.add_option("--dataset", dest='dataset', type='string', default='')
+    parser.add_option("--fold", dest='fold', type='int', default=3)
+    parser.add_option("--seed", dest='seed', type='int', default=718)
     (kwargs, args) = parser.parse_args()
     return kwargs
 
 
-def parse_reader(dataset, feature_config, density):
+def parse_reader(dataset, feature_config, density, fold=10, seed=None):
     if dataset == 'lol':
         if density == 'sparse':
-            reader = CVFoldLoLSparseReader(data_path=constants.lol_pickle, folds=10, feature_config=feature_config)
+            reader = CVFoldLoLSparseReader(data_path=constants.lol_pickle, folds=fold,
+                                           feature_config=feature_config, seed=seed)
         else:
             raise NotImplementedError
     elif dataset == 'lol2':
         if density == 'dense':
-            reader = CVFoldDenseReader(data_path=constants.lol2_pickle, folds=10, feature_config=feature_config)
+            reader = CVFoldDenseReader(data_path=constants.lol2_pickle, folds=fold,
+                                       feature_config=feature_config, seed=seed)
     elif dataset == 'dota':
         if density == 'dense':
-            reader = CVFoldDenseReader(data_path=constants.dota_pickle, folds=10, feature_config=feature_config)
+            reader = CVFoldDenseReader(data_path=constants.dota_pickle, folds=fold,
+                                       feature_config=feature_config, seed=seed)
         elif density == 'sparse':
-            reader = CVFoldSparseReader(data_path=constants.dota_pickle, folds=10, feature_config=feature_config)
+            reader = CVFoldSparseReader(data_path=constants.dota_pickle, folds=fold,
+                                        feature_config=feature_config, seed=seed)
         else:
             raise NotImplementedError
     elif dataset == 'dota2':
         if density == 'dense':
-            reader = CVFoldDenseReader(data_path=constants.dota2_pickle, folds=10, feature_config=feature_config)
+            reader = CVFoldDenseReader(data_path=constants.dota2_pickle, folds=fold,
+                                       feature_config=feature_config, seed=seed)
         elif density == 'sparse':
-            reader = CVFoldSparseReader(data_path=constants.dota2_pickle, folds=10, feature_config=feature_config)
+            reader = CVFoldSparseReader(data_path=constants.dota2_pickle, folds=fold,
+                                        feature_config=feature_config, seed=seed)
         else:
             raise NotImplementedError
     elif dataset == 'dota3':
         if density == 'dense':
-            reader = CVFoldDenseReader(data_path=constants.dota3_pickle, folds=10, feature_config=feature_config)
+            reader = CVFoldDenseReader(data_path=constants.dota3_pickle, folds=fold,
+                                       feature_config=feature_config, seed=seed)
         elif density == 'sparse':
-            reader = CVFoldSparseReader(data_path=constants.dota3_pickle, folds=10, feature_config=feature_config)
+            reader = CVFoldSparseReader(data_path=constants.dota3_pickle, folds=fold,
+                                        feature_config=feature_config, seed=seed)
         else:
             raise NotImplementedError
     else:
