@@ -7,6 +7,7 @@ import pickle
 import numpy
 import time
 from scipy.sparse import csr_matrix
+from collections import defaultdict
 
 
 class CVFoldLoLSparseReader(object):
@@ -18,7 +19,8 @@ class CVFoldLoLSparseReader(object):
         self.feature_config = feature_config
         self.read_data_from_file(data_path, folds, seed)
         # used to record train/test/validation match id in each fold
-        self.match_id_record = {}
+        # key: fold, value: dict(key: train/valid/test, value: list of match ids)
+        self.match_id_record = defaultdict(dict)
 
     def read_data_from_file(self, data_path, folds, seed):
         """
@@ -80,6 +82,9 @@ class CVFoldLoLSparseReader(object):
         train_feature = self.to_feature_matrix(M_r_C_train, M_b_C_train, M_r_P_train, M_b_P_train)
         test_feature = self.to_feature_matrix(M_r_C_test, M_b_C_test, M_r_P_test, M_b_P_test)
 
+        self.match_id_record[i]['train'] = [self.match_idx2id_dict[idx] for idx in train_idx]
+        self.match_id_record[i]['test'] = [self.match_idx2id_dict[idx] for idx in test_idx]
+
         return train_feature, M_o_train, test_feature, M_o_test
 
     def read_train_test_valid_fold(self, i):
@@ -105,6 +110,10 @@ class CVFoldLoLSparseReader(object):
         train_feature = self.to_feature_matrix(M_r_C_train, M_b_C_train, M_r_P_train, M_b_P_train)
         test_feature = self.to_feature_matrix(M_r_C_test, M_b_C_test, M_r_P_test, M_b_P_test)
         valid_feature = self.to_feature_matrix(M_r_C_valid, M_b_C_valid, M_r_P_valid, M_b_P_valid)
+
+        self.match_id_record[i]['train'] = [self.match_idx2id_dict[idx] for idx in train_idx]
+        self.match_id_record[i]['test'] = [self.match_idx2id_dict[idx] for idx in test_idx]
+        self.match_id_record[i]['valid'] = [self.match_idx2id_dict[idx] for idx in valid_idx]
 
         return train_feature, M_o_train, test_feature, M_o_test, valid_feature, M_o_valid
 
@@ -190,3 +199,7 @@ class CVFoldLoLSparseReader(object):
             return "champion_summoner_one_team_sparse"
         else:
             raise NotImplementedError
+
+    def save_match_id_record(self):
+        with open('../model/lol_match_id_record.lol', 'wb') as f:
+            pickle.dump(self.match_id_record, f)
