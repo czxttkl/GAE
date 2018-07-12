@@ -21,6 +21,12 @@ def parse_ml_parameters():
     # NN
     parser.add_option("--nn_hidden", dest="nn_hidden", type="int", default=0)
     parser.add_option("--nn_featconfig", dest="nn_featconfig", type="string", default='')
+    #GBDT
+    parser.add_option("--gbdt_featconfig", dest="gbdt_featconfig", type="string", default='')
+    parser.add_option("--gbdt_ntree", dest="gbdt_ntree", type="int", default=100)
+    parser.add_option("--gbdt_lr", dest="gbdt_lr", type="float", default=0.1)
+    parser.add_option("--gbdt_maxdepth", dest="gbdt_maxdepth", type="int", default=3)
+    parser.add_option("--gbdt_minsampleleaf", dest="gbdt_minsampleleaf", type="int", default=1)
     # general
     parser.add_option("--density", dest='density', type='string', default='')
     parser.add_option("--dataset", dest='dataset', type='string', default='')

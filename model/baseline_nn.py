@@ -28,8 +28,8 @@ if __name__ == "__main__":
     feature_config = 'one_way_one_team' if not kwargs else kwargs.nn_featconfig
     nn_hidden = 100 if not kwargs else kwargs.nn_hidden
 
-    print('use parameter: dataset {}, feature_config: {}, density: {}, nn_hidden: {}'
-          .format(dataset, feature_config, density, nn_hidden))
+    print('use parameter: dataset {}, feature_config: {}, density: {}, fold: {}, seed: {}, nn_hidden: {}'
+          .format(dataset, feature_config, density, fold, seed, nn_hidden))
     reader = parse_reader(dataset, feature_config, density, fold, seed)
 
     baseline = \

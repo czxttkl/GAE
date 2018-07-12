@@ -22,12 +22,15 @@ if __name__ == "__main__":
 
     dataset = 'dota' if not kwargs else kwargs.dataset
     density = 'dense' if not kwargs else kwargs.density
+    fold = 3 if not kwargs else kwargs.fold
+    seed = 718 if not kwargs else kwargs.seed
 
+    # use nn_featconfig for the time being
     feature_config = 'one_way_one_team' if not kwargs else kwargs.nn_featconfig
 
-    print('use parameter: dataset {}, feature_config: {}, density: {}'
-          .format(dataset, feature_config, density))
-    reader = parse_reader(dataset, feature_config, density)
+    print('use parameter: dataset {}, feature_config: {}, density: {}, fold: {}, seed: {}'
+          .format(dataset, feature_config, density, fold, seed))
+    reader = parse_reader(dataset, feature_config, density, fold, seed)
 
     baseline = \
         BaselineMajority(
@@ -38,6 +41,6 @@ if __name__ == "__main__":
             #                           feature_config='one_way_one_team'),
             reader=reader,
             writer=ReportWriter('result.csv'))
-    baseline.cross_valid()
+    baseline.cross_valid(validation=True)
 
     # baseline.save_model()

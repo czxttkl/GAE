@@ -172,6 +172,33 @@ class CVFoldLoLSparseReader(object):
                                1, 1, 1, 1, 1, -1, -1, -1, -1, -1,
                                1, 1, 1, 1, 1, -1, -1, -1, -1, -1], Z)
             data = csr_matrix((vals, (row, col)), shape=(Z, self.M + self.N + self.M * self.N))
+        elif self.feature_config == 'pure_champion_summoner_interact_one_team':
+            row = numpy.repeat(numpy.arange(Z), 10)
+            col = numpy.hstack((M_r_P * self.M + M_r_C,
+                                M_b_P * self.M + M_b_C)).flatten()
+            assert len(row) == len(col)
+            vals = numpy.tile([1, 1, 1, 1, 1, -1, -1, -1, -1, -1], Z)
+            data = csr_matrix((vals, (row, col)), shape=(Z, self.M * self.N))
+        elif self.feature_config == 'champion_champion_summoner_interact_one_team':
+            row = numpy.repeat(numpy.arange(Z), 20)
+            col = numpy.hstack((M_r_P * self.M + M_r_C,
+                                M_b_P * self.M + M_b_C,
+                                self.M * self.N + M_r_C,
+                                self.M * self.N + M_b_C)).flatten()
+            assert len(row) == len(col)
+            vals = numpy.tile([1, 1, 1, 1, 1, -1, -1, -1, -1, -1,
+                               1, 1, 1, 1, 1, -1, -1, -1, -1, -1], Z)
+            data = csr_matrix((vals, (row, col)), shape=(Z, self.M + self.M * self.N))
+        elif self.feature_config == 'summoner_champion_summoner_interact_one_team':
+            row = numpy.repeat(numpy.arange(Z), 20)
+            col = numpy.hstack((M_r_P * self.M + M_r_C,
+                                M_b_P * self.M + M_b_C,
+                                self.M * self.N + M_r_P,
+                                self.M * self.N + M_b_P)).flatten()
+            assert len(row) == len(col)
+            vals = numpy.tile([1, 1, 1, 1, 1, -1, -1, -1, -1, -1,
+                               1, 1, 1, 1, 1, -1, -1, -1, -1, -1], Z)
+            data = csr_matrix((vals, (row, col)), shape=(Z, self.N + self.M * self.N))
         else:
             raise NotImplementedError
 
@@ -197,6 +224,18 @@ class CVFoldLoLSparseReader(object):
         # champion summoner one team
         elif self.feature_config == 'champion_summoner_one_team':
             return "champion_summoner_one_team_sparse"
+        # full champion summoner interact + summoner + champion
+        elif self.feature_config == 'champion_summoner_interact_one_team':
+            return "champion_summoner_interact_one_team_sparse"
+        # only champion summoner interac
+        elif self.feature_config == 'pure_champion_summoner_interact_one_team':
+            return "pure_champion_summoner_interact_one_team_sparse"
+        # champion + champion summoner interact
+        elif self.feature_config == 'champion_champion_summoner_interact_one_team':
+            return "champion_champion_summoner_interact_one_team_sparse"
+        # summoner + champion summoner interact
+        elif self.feature_config == 'summoner_champion_summoner_interact_one_team':
+            return "summoner_champion_summoner_interact_one_team_sparse"
         else:
             raise NotImplementedError
 
