@@ -1,0 +1,73 @@
+data_src, model, feature, duration, train_acc, train_auc, test_acc, test_auc, valid_acc, valid_auc
+lol,            lR_C1e-05, champion_summoner_interact_one_team_sparse,4,0.54127,0.55974,0.5408,0.55526,0.53437,0.55115
+lol,           lR_C0.0001, champion_summoner_interact_one_team_sparse,5,0.5475,0.56775,0.5443,0.55916,0.53839,0.55546
+lol,            lR_C0.001, champion_summoner_interact_one_team_sparse,9,0.56912,0.59858,0.54537,0.56461,0.54275,0.56162
+lol,             lR_C0.01, champion_summoner_interact_one_team_sparse,20,0.69689,0.76731,0.55026,0.57178,0.54603,0.56776
+lol,              lR_C0.1, champion_summoner_interact_one_team_sparse,55.33,0.93105,0.98095,0.5449,0.56404,0.54102,0.55957
+lol,              lR_C1.0, champion_summoner_interact_one_team_sparse,114,0.99966,1,0.54,0.55772,0.53758,0.55443
+lol,             lR_C10.0, champion_summoner_interact_one_team_sparse,188.67,1,1,0.53815,0.55546,0.53699,0.55268
+lol,            lR_C100.0, champion_summoner_interact_one_team_sparse,249,1,1,0.53734,0.55449,0.5369,0.5519
+lol,           lR_C1000.0, champion_summoner_interact_one_team_sparse,276.67,1,1,0.53702,0.55392,0.53685,0.55143
+lol,          lR_C10000.0, champion_summoner_interact_one_team_sparse,282,1,1,0.53627,0.55338,0.53643,0.55087
+lol,       NN_hiddenunit3, champion_summoner_interact_one_team_sparse, 48995.00, 0.99657, 0.99993, 0.52956, 0.53962, 0.53142, 0.54104
+lol,        MajorityClass, champion_summoner_interact_one_team_sparse, 0.00, 0.50201, 0.50000, 0.50529, 0.50000, 0.50090, 0.50000
+,,,,,,,,,
+lol,            lR_C1e-05, summoner_one_team_sparse, 0.00, 0.74677, 0.81539, 0.51189, 0.51685, 0.50648, 0.51073
+lol,           lR_C0.0001, summoner_one_team_sparse, 0.00, 0.74828, 0.81649, 0.51218, 0.51694, 0.50662, 0.51089
+lol,            lR_C0.001, summoner_one_team_sparse, 0.00, 0.74831, 0.81653, 0.51214, 0.51694, 0.50661, 0.51090
+lol,             lR_C0.01, summoner_one_team_sparse, 0.00, 0.75526, 0.82772, 0.51253, 0.51785, 0.50795, 0.51194
+lol,              lR_C0.1, summoner_one_team_sparse, 0.00, 0.80698, 0.88591, 0.51610, 0.52269, 0.51253, 0.51777
+lol,              lR_C1.0, summoner_one_team_sparse, 1.00, 0.89939, 0.96305, 0.52257, 0.53171, 0.52117, 0.52843
+lol,             lR_C10.0, summoner_one_team_sparse, 3.00, 0.96899, 0.99522, 0.52627, 0.53898, 0.52705, 0.53727
+lol,            lR_C100.0, summoner_one_team_sparse, 9.67, 0.99393, 0.99962, 0.52589, 0.54029, 0.52882, 0.53907
+lol,           lR_C1000.0, summoner_one_team_sparse, 32.67, 0.99816, 0.99994, 0.52293, 0.53821, 0.52605, 0.53785
+lol,          lR_C10000.0, summoner_one_team_sparse, 81.67, 0.99972, 0.99999, 0.52071, 0.53419, 0.52198, 0.53454
+,,,,,,,,,
+lol,            lR_C1e-05, champion_summoner_one_team_sparse, 0.00, 0.53928, 0.55676, 0.54049, 0.55502, 0.53411, 0.55094
+lol,           lR_C0.0001, champion_summoner_one_team_sparse, 0.00, 0.54422, 0.56315, 0.54370, 0.55879, 0.53832, 0.55514
+lol,            lR_C0.001, champion_summoner_one_team_sparse, 1.00, 0.55717, 0.58161, 0.54399, 0.56333, 0.54251, 0.56048
+lol,             lR_C0.01, champion_summoner_one_team_sparse, 2.33, 0.62499, 0.67449, 0.54626, 0.56610, 0.54312, 0.56248
+lol,              lR_C0.1, champion_summoner_one_team_sparse, 5.67, 0.79079, 0.87116, 0.53796, 0.55282, 0.53203, 0.54777
+lol,              lR_C1.0, champion_summoner_one_team_sparse, 15.00, 0.90054, 0.96371, 0.53240, 0.54646, 0.53087, 0.54324
+lol,             lR_C10.0, champion_summoner_one_team_sparse, 32.33, 0.97044, 0.99562, 0.53324, 0.54841, 0.53202, 0.54680
+lol,            lR_C100.0, champion_summoner_one_team_sparse, 64.33, 0.99474, 0.99968, 0.53201, 0.54768, 0.53297, 0.54671
+lol,           lR_C1000.0, champion_summoner_one_team_sparse, 197.00, 0.99871, 0.99996, 0.52850, 0.54523, 0.53085, 0.54443
+lol,          lR_C10000.0, champion_summoner_one_team_sparse, 339.67, 0.99994, 1.00000, 0.52740, 0.54259, 0.52885, 0.54208
+,,,,,,,,,
+lol,            lR_C1e-05, pure_champion_summoner_interact_one_team_sparse, 1.00, 0.88928, 0.94593, 0.53591, 0.55284, 0.53278, 0.54971
+lol,           lR_C0.0001, pure_champion_summoner_interact_one_team_sparse, 2.00, 0.89682, 0.94932, 0.53645, 0.55328, 0.53370, 0.55010
+lol,            lR_C0.001, pure_champion_summoner_interact_one_team_sparse, 2.00, 0.89682, 0.94932, 0.53645, 0.55328, 0.53372, 0.55010
+lol,             lR_C0.01, pure_champion_summoner_interact_one_team_sparse, 3.00, 0.89985, 0.95522, 0.53643, 0.55336, 0.53365, 0.55029
+lol,              lR_C0.1, pure_champion_summoner_interact_one_team_sparse, 5.00, 0.95055, 0.98815, 0.53666, 0.55353, 0.53500, 0.55089
+lol,              lR_C1.0, pure_champion_summoner_interact_one_team_sparse, 11.33, 0.99929, 1.00000, 0.53488, 0.54896, 0.53224, 0.54697
+lol,             lR_C10.0, pure_champion_summoner_interact_one_team_sparse, 20.00, 1.00000, 1.00000, 0.53173, 0.54503, 0.53093, 0.54356
+lol,            lR_C100.0, pure_champion_summoner_interact_one_team_sparse, 26.33, 1.00000, 1.00000, 0.53063, 0.54335, 0.53054, 0.54208
+lol,           lR_C1000.0, pure_champion_summoner_interact_one_team_sparse, 30.33, 1.00000, 1.00000, 0.52966, 0.54231, 0.53009, 0.54118
+lol,          lR_C10000.0, pure_champion_summoner_interact_one_team_sparse, 31.67, 1.00000, 1.00000, 0.52885, 0.54105, 0.52950, 0.54018
+,,,,,,,,,
+lol,            lR_C1e-05, champion_champion_summoner_interact_one_team_sparse, 3.67, 0.53930, 0.55685, 0.54031, 0.55512, 0.53430, 0.55108
+lol,           lR_C0.0001, champion_champion_summoner_interact_one_team_sparse, 5.00, 0.54429, 0.56329, 0.54420, 0.55894, 0.53873, 0.55533
+lol,            lR_C0.001, champion_champion_summoner_interact_one_team_sparse, 9.00, 0.55747, 0.58218, 0.54451, 0.56387, 0.54220, 0.56115
+lol,             lR_C0.01, champion_champion_summoner_interact_one_team_sparse, 21.33, 0.63541, 0.68759, 0.55158, 0.57160, 0.54825, 0.56880
+lol,              lR_C0.1, champion_champion_summoner_interact_one_team_sparse, 46.00, 0.91281, 0.97037, 0.55458, 0.57869, 0.55246, 0.57540
+lol,              lR_C1.0, champion_champion_summoner_interact_one_team_sparse, 90.00, 0.99914, 0.99999, 0.54418, 0.56295, 0.54319, 0.56076
+lol,             lR_C10.0, champion_champion_summoner_interact_one_team_sparse, 142.67, 1.00000, 1.00000, 0.53929, 0.55569, 0.53883, 0.55407
+lol,            lR_C100.0, champion_champion_summoner_interact_one_team_sparse, 173.00, 1.00000, 1.00000, 0.53831, 0.55299, 0.53735, 0.55161
+lol,           lR_C1000.0, champion_champion_summoner_interact_one_team_sparse, 222.67, 1.00000, 1.00000, 0.53671, 0.55159, 0.53646, 0.55032
+lol,          lR_C10000.0, champion_champion_summoner_interact_one_team_sparse, 240.67, 1.00000, 1.00000, 0.53535, 0.55065, 0.53602, 0.54948
+,,,,,,,,,
+lol,            lR_C1e-05, summoner_champion_summoner_interact_one_team_sparse, 2.00, 0.83521, 0.90457, 0.52210, 0.53315, 0.51759, 0.52751
+lol,           lR_C0.0001, summoner_champion_summoner_interact_one_team_sparse, 2.00, 0.83521, 0.90457, 0.52210, 0.53315, 0.51759, 0.52751
+lol,            lR_C0.001, summoner_champion_summoner_interact_one_team_sparse, 3.00, 0.83539, 0.90532, 0.52215, 0.53318, 0.51770, 0.52756
+lol,             lR_C0.01, summoner_champion_summoner_interact_one_team_sparse, 4.33, 0.85559, 0.92624, 0.52336, 0.53496, 0.51926, 0.52950
+lol,              lR_C0.1, summoner_champion_summoner_interact_one_team_sparse, 7.00, 0.94396, 0.98667, 0.52880, 0.54104, 0.52409, 0.53636
+lol,              lR_C1.0, summoner_champion_summoner_interact_one_team_sparse, 15.67, 0.99968, 1.00000, 0.53047, 0.54481, 0.52952, 0.54140
+lol,             lR_C10.0, summoner_champion_summoner_interact_one_team_sparse, 27.00, 1.00000, 1.00000, 0.53037, 0.54493, 0.53101, 0.54206
+lol,            lR_C100.0, summoner_champion_summoner_interact_one_team_sparse, 41.33, 1.00000, 1.00000, 0.53001, 0.54474, 0.53083, 0.54207
+lol,           lR_C1000.0, summoner_champion_summoner_interact_one_team_sparse, 48.00, 1.00000, 1.00000, 0.53022, 0.54457, 0.53038, 0.54200
+lol,          lR_C10000.0, summoner_champion_summoner_interact_one_team_sparse, 50.67, 1.00000, 1.00000, 0.53042, 0.54432, 0.53059, 0.54187
+,,,,,,,,,
+
+
+
+
