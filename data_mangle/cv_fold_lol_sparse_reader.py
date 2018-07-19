@@ -240,5 +240,5 @@ class CVFoldLoLSparseReader(object):
             raise NotImplementedError
 
     def save_match_id_record(self):
-        with open('../model/lol_match_id_record.lol', 'wb') as f:
+        with open('../model/lol_match_id_record.pickle', 'wb') as f:
             pickle.dump(self.match_id_record, f)
